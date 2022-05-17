@@ -1,81 +1,100 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
+/// <summary>
+/// A world state that an agent can check.
+/// </summary>
 [System.Serializable]
 public class WorldState
 {
-    //Pairs that assosiate a state and value
+    /// <summary>
+    /// The name of the state.
+    /// </summary>
     public string key;
+
+    /// <summary>
+    /// The current value assosiated to the state.
+    /// </summary>
     public int value;
 }
 
+/// <summary>
+/// The states of the world that an agent can check.
+/// </summary>
 public class WorldStates
 {
-    //Links the states together
-    public Dictionary<string, int> states;
+    /// <summary>
+    /// Links the states together.
+    /// </summary>
+    public Dictionary<string, int> States { get; private set; }
 
-    public WorldStates()
-    {
-        states = new Dictionary<string, int>();
-    }
+    /// <summary>
+    /// Constructor for quick creation of class.
+    /// </summary>
+    public WorldStates() => States = new Dictionary<string, int>();
 
-    //Check for if the state exists
-    public bool HasState(string key)
-    {
-        return states.ContainsKey(key);
-    }
+    /// <summary>
+    /// Check for if the state exists.
+    /// </summary>
+    /// <param name="key">The state name being checked for.</param>
+    /// <returns>If the world states contains a given state.</returns>
+    public bool HasState(string key) => States.ContainsKey(key);
 
-    //Add a state and assosiated key to the dictionary
-    void AddState(string key, int value)
-    {
-        states.Add(key, value);
-    }
+    /// <summary>
+    /// Add a state and assosiated key to the dictionary.
+    /// </summary>
+    /// <param name="key">The name of the state being added.</param>
+    /// <param name="value">The value assosiated with the state.</param>
+    public void AddState(string key, int value) => States.Add(key, value);
 
-    //Modify an assosiated dictinary entrys value
+    /// <summary>
+    /// Modify an assosiated dictinary entrys value.
+    /// </summary>
+    /// <param name="key">The name of the state being modified.</param>
+    /// <param name="value">The value assosiated with the state.</param>
     public void ModifyState(string key, int value)
     {
-        if (states.ContainsKey(key))
+        if (States.ContainsKey(key))
         {
-            states[key] += value;
+            States[key] += value;
 
-            //Prevents negatives
-            if (states[key] <= 0)
+            // Prevents negatives.
+            if (States[key] <= 0)
             {
                 RemoveState(key);
             }
         }
         else
         {
-            states.Add(key, value);
+            AddState(key, value);
         }
     }
 
-    //Remove the key pair from the dictionary
+    /// <summary>
+    /// Remove the key pair from the dictionary.
+    /// </summary>
+    /// <param name="key">The state being removed.</param>
     public void RemoveState(string key)
     {
-        if (states.ContainsKey(key))
+        if (States.ContainsKey(key))
         {
-            states.Remove(key);
+            States.Remove(key);
         }
     }
 
-    //Set the value to a state
+    /// <summary>
+    /// Set the value to a state.
+    /// </summary>
+    /// <param name="key">The name of the state being set.</param>
+    /// <param name="value">The value assosiated with the state.</param>
     public void SetState(string key, int value)
     {
-        if (states.ContainsKey(key))
+        if (States.ContainsKey(key))
         {
-            states[key] = value;
+            States[key] = value;
         }
         else
         {
-            states.Add(key, value);
+            States.Add(key, value);
         }
-    }
-
-    //Return all available states
-    public Dictionary<string, int> GetStates()
-    {
-        return states;
     }
 }

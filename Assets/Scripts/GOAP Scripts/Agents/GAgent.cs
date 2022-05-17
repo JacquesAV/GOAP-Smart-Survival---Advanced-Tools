@@ -7,164 +7,219 @@ using UnityEngine.AI;
 [RequireComponent(typeof(GInventory))]
 public class GAgent : MonoBehaviour
 {
-    public List<GAction> actions = new List<GAction>(); //List of actions that the agent has access to
-    public Dictionary<SubGoal, int> goals = new Dictionary<SubGoal, int>(); //List of subgoals the agent will seek to achieve
-    public WorldStates beliefs = new WorldStates(); //Agents internal states
+    /// <summary>
+    /// List of actions that the agent has access to.
+    /// </summary>
+    public List<GAction> actions = new List<GAction>();
+
+    /// <summary>
+    /// List of subgoals the agent will seek to achieve.
+    /// </summary>
+    public Dictionary<SubGoal, int> goals = new Dictionary<SubGoal, int>();
+
+    /// <summary>
+    /// List of agent beliefs about the world.
+    /// </summary>
+    public WorldStates beliefs = new WorldStates();
+
+    /// <summary>
+    /// Agents internal states.
+    /// </summary>
     [HideInInspector] public GInventory inventory;
-    private NavMeshAgent navAgent; //Although unused in this class, this should be used for action classes to fetch
 
-    private GPlanner planner; //The planner
-    private Queue<GAction> actionQueue; //Queue for the actions that will be taken
-    public GAction currentAction; //The action that is currently being taken
-    public SubGoal currentGoal; //Current goal that the agent will seek to achieve
+    /// <summary>
+    /// Although unused in this class, this should be used for action classes to fetch.
+    /// </summary>
+    private NavMeshAgent navAgent;
 
+    /// <summary>
+    /// The planner that tracks actions.
+    /// </summary>
+    private GPlanner planner;
+
+    /// <summary>
+    /// Queue for the actions that will be taken.
+    /// </summary>
+    private Queue<GAction> actionQueue;
+
+    /// <summary>
+    /// The action that is currently being taken.
+    /// </summary>
+    public GAction currentAction;
+
+    /// <summary>
+    /// Current goal that the agent will seek to achieve.
+    /// </summary>
+    public SubGoal currentGoal;
+
+    /// <summary>
+    /// Distance for a goal to be valid.
+    /// </summary>
     [Range(1.5f,2.5f)]
-    public float goalDistanceSentitivity = 2f; //Distance for a goal to be valid
+    public float goalDistanceSentitivity = 2f;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Tracks is the current action has been invoked.
+    /// </summary>
+    private bool invoked = false;
+
+    /// <summary>
+    /// Start is called before the first frame update.
+    /// </summary>
     public void Start()
     {
-        //Get the navmesh agent from the attached agent
+        // Get the navmesh agent from the attached agent.
         navAgent = gameObject.GetComponent<NavMeshAgent>();
 
-        //Disable forced rotation
+        // Disable forced rotation.
         navAgent.updateRotation = false;
         navAgent.updateUpAxis = false;
 
-        //Create the array of actions that the agent has
+        // Create the array of actions that the agent has.
         GAction[] availableActions = this.GetComponents<GAction>();
         foreach (GAction action in availableActions)
         {
             actions.Add(action);
         }
 
-        //Get the inventory if one is attached
+        // Get the inventory if one is attached.
         if(gameObject.TryGetComponent(out GInventory inv))
         {
             inventory = inv;
         }
     }
-    
-    private bool invoked = false;
-    public void CompleteAction()
-    {
-        //Finish running the action
-        currentAction.running = false;
 
-        //Method that is run at the end of an action
-        currentAction.PostPerform();
-
-        //Set invoked back to false, allowing for the next invoke test
-        invoked = false;
-    }
-
-    // Update is called once per frame
+    /// <summary>
+    /// Late update is called once per end of frame.
+    /// </summary>
     public void LateUpdate()
     {
         RunAgentLogic();
         CorrectSpriteOrientation();
-
-        //If the path is partial, it means the path is no longer valid and the AI should re-evaluate their decisions
-        //Debug.Log(navAgent.path.status);
-        //Debug.Log(navAgent.pathStatus);
     }
 
+    /// <summary>
+    /// Method that runs completion logic for the current action.
+    /// </summary>
+    public void CompleteAction()
+    {
+        // Finish running the action.
+        currentAction.running = false;
+
+        // Method that is run at the end of an action.
+        currentAction.PostPerform();
+
+        // Set invoked back to false, allowing for the next invoke test.
+        invoked = false;
+
+        // Reset the agents stored action.
+        currentAction = null;
+
+        // Reset the NavAgent.
+        navAgent.ResetPath();
+    }
+
+    /// <summary>
+    /// Core functionality of the GOAP agent.
+    /// </summary>
     private void RunAgentLogic()
     {
-        //If the current action is not currently executing
+        // If the current action is not currently executing.
         if (currentAction != null && currentAction.running)
         {
-            // Check the agent has a goal, a path to the goal that is valid, and has reached that goal
-            if (currentAction.navAgent.hasPath && Vector3.Distance(currentAction.target.transform.position, transform.position) <= goalDistanceSentitivity)//currentAction.agent.remainingDistance <= goalDistanceSentitivity)
+            // Check the agent has a goal, a path to the goal that is valid, and has reached that goal.
+            // For now this check does not include navmesh elements due to issues in it.
+            if (Vector3.Distance(currentAction.target.transform.position, transform.position) <= goalDistanceSentitivity)// && currentAction.navAgent.hasPath && currentAction.agent.remainingDistance <= goalDistanceSentitivity)
             {
-                //If not yet invoked, then attempt to perform it
+                // If not yet invoked, then attempt to perform it.
                 if (!invoked)
                 {
-                    //Will complete the action after the actions duration
-                    Invoke("CompleteAction", currentAction.duration);
+                    // Will complete the action after the actions duration.
+                    Invoke(nameof(CompleteAction), currentAction.duration);
                     invoked = true;
                 }
             }
             return;
         }
 
-
-        //If no plan or action queue exists, create one
+        // If no plan or action queue exists, create one.
         if (planner == null || actionQueue == null)
         {
             planner = new GPlanner();
 
-            //Sort the goals by descending value
+            // Sort the goals by descending value.
             var sortedGoals = from entry in goals orderby entry.Value descending select entry;
 
-            //Loop through each goal and 
+            // Loop through each goal and sort them.
             foreach (KeyValuePair<SubGoal, int> sg in sortedGoals)
             {
-                //Set the action queue to what the planner can return based on the goal
+                // Set the action queue to what the planner can return based on the goal.
                 actionQueue = planner.PlanActions(actions, sg.Key.sGoals, beliefs);
 
-                //If the queue is not null then a plan exists
+                // If the queue is not null then a plan exists.
                 if (actionQueue != null)
                 {
-                    // Set the current goal
+                    // Set the current goal.
                     currentGoal = sg.Key;
 
-                    //Once the plan is found, break the loop
+                    // Once the plan is found, break the loop.
                     break;
                 }
             }
         }
 
-        //If a queue exists and the action queue is empty
+        // If a queue exists and the action queue is empty.
         if (actionQueue != null && actionQueue.Count == 0)
         {
-            //Check if the current goal can/should be removed
+            // Check if the current goal can/should be removed.
             if (currentGoal.isRemovedOnCompletion)
             {
-                //Remove the goal
+                // Remove the goal.
                 goals.Remove(currentGoal);
             }
-            //Nullify the planner in order to force the formation of a new plan
+            // Nullify the planner in order to force the formation of a new plan.
             planner = null;
         }
 
-        //If there are still actions to execute in the queue
+        // If there are still actions to execute in the queue.
         if (actionQueue != null && actionQueue.Count > 0)
         {
-            //Dequeue the top action of the queue and set it as the currentAction to execute
+            // Dequeue the top action of the queue and set it as the currentAction to execute.
             currentAction = actionQueue.Dequeue();
 
-            //Check for pre-conditions
+            // Check for pre-conditions.
             if (currentAction.PrePerform())
             {
-                //If a target is not yet selected, find it
+                // If a target is not yet selected, find it.
                 if (currentAction.target == null && currentAction.targetTag != "")
                 {
                     currentAction.target = GameObject.FindWithTag(currentAction.targetTag);
                 }
 
-                //If the target is not null (valid target)
+                // If the target is not null (valid target).
                 if (currentAction.target != null)
                 {
-                    //Start running the current action
+                    // Start running the current action.
                     currentAction.running = true;
 
-                    //Set the destination for the navigation agent to move to
+                    // Set the destination for the navigation agent to move to.
                     currentAction.navAgent.SetDestination(currentAction.target.transform.position);
                 }
-
             }
             else
             {
-                //Force a new plan by nullifying the queue
+                // Force a new plan by nullifying the queue.
                 actionQueue = null;
             }
         }
     }
 
+    /// <summary>
+    /// Orientates the sprite correctly.
+    /// </summary>
     private void CorrectSpriteOrientation()
     {
-        //Change based on agent velocity
+        // Change based on agent velocity.
         if (navAgent.velocity.x < 0)
         {
             GetComponent<SpriteRenderer>().flipX = false;

@@ -1,18 +1,11 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections;
 using System.Collections.Generic;
 
 [CustomEditor(typeof(GAgentVisual))]
 [CanEditMultipleObjects]
 public class GAgentVisualEditor : Editor
 {
-
-    void OnEnable()
-    {
-
-    }
-
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -41,7 +34,7 @@ public class GAgentVisualEditor : Editor
                 GUILayout.Label("=====  " + sg.Key);
         }
         GUILayout.Label("Beliefs: ");
-        foreach (KeyValuePair<string, int> sg in agent.gameObject.GetComponent<GAgent>().beliefs.GetStates())
+        foreach (KeyValuePair<string, int> sg in agent.gameObject.GetComponent<GAgent>().beliefs.States)
         {
             GUILayout.Label("=====  " + sg.Key);
         }
@@ -51,7 +44,6 @@ public class GAgentVisualEditor : Editor
         //{
         //    GUILayout.Label("====  " + g.tag);
         //}
-
 
         serializedObject.ApplyModifiedProperties();
     }

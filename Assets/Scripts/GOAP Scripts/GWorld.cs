@@ -1,55 +1,97 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+/// <summary>
+/// Class that tracks globally relevant objects.
+/// </summary>
 public sealed class GWorld
 {
-    private static readonly GWorld instance = new GWorld(); //Singleton
-    private static WorldStates world; //Dictionary of all our states
+    /// <summary>
+    /// Return current instance.
+    /// </summary>
+    public static GWorld Instance { get; } = new GWorld();
 
-    public static List<GameObject> treasurePoints = new List<GameObject>(); //List of all existing treasure points
-    public static List<GameObject> restingPoints = new List<GameObject>(); //List of all existing resting points
-    public static List<GameObject> deliveryPoints = new List<GameObject>(); //List of all existing delivery points
+    /// <summary>
+    /// Dictionary of all our states.
+    /// </summary>
+    private static readonly WorldStates world;
 
+    /// <summary>
+    /// List of all existing home points.
+    /// </summary>
+    public static List<GameObject> homePoints = new List<GameObject>();
+
+    /// <summary>
+    /// List of all existing food points.
+    /// </summary>
+    public static List<GameObject> foodPoints = new List<GameObject>();
+
+    /// <summary>
+    /// Setup for the world.
+    /// </summary>
     static GWorld()
     {
-        //Create new dictionary of the states
+        // Create new dictionary of the states.
         world = new WorldStates();
 
-        //Get all the world treasure points and modify the state world to report the existing amount
-        treasurePoints = GameObject.FindGameObjectsWithTag("TreasurePoint").ToList();
-        if (treasurePoints.Count > 0)
+        // Get all the world home points and modify the state world to report the existing amount.
+        homePoints = GameObject.FindGameObjectsWithTag("HomePoint").ToList();
+        if (homePoints.Count > 0)
         {
-            world.ModifyState("TreasurePointExists", treasurePoints.Count);
+            world.ModifyState("HomePointExists", homePoints.Count);
         }
 
-        //Get all the world delivery points and modify the state world to report the existing amount
-        deliveryPoints = GameObject.FindGameObjectsWithTag("DeliveryPoint").ToList();
-        if (deliveryPoints.Count > 0)
+        // Get all the world delivery points and modify the state world to report the existing amount.
+        foodPoints = GameObject.FindGameObjectsWithTag("FoodPoint").ToList();
+        if (foodPoints.Count > 0)
         {
-            world.ModifyState("DeliveryPointExists", deliveryPoints.Count);
+            world.ModifyState("FoodPointExists", foodPoints.Count);
         }
 
-        //Get all the world resting points and modify the state world to report the existing amount
-        restingPoints = GameObject.FindGameObjectsWithTag("RestingPoint").ToList();
-        if (restingPoints.Count > 0)
-        {
-            world.ModifyState("RestingPointExists", restingPoints.Count);
-        }
+        // Set the belief of night.
+        SetIsNight(false);
     }
 
-    private GWorld()
+    /// <summary>
+    /// Remove food point from simulation.
+    /// </summary>
+    /// <param name="removedObject">The object to remove.</param>
+    /// <param name="shouldDestroy">If the object should be destroyed.</param>
+    public void RemoveFoodPoint(GameObject removedObject, bool shouldDestroy)
     {
+        foodPoints.Remove(removedObject);
+        if(shouldDestroy)
+        {
+            GameObject.Destroy(removedObject);
+        }
     }
 
-    //Return current instance
-    public static GWorld Instance
+    /// <summary>
+    /// Set the belief of if it is night or day.
+    /// </summary>
+    /// <param name="isNight">If night should be applied.</param>
+    public static void SetIsNight(bool isNight)
     {
-        get { return instance; }
+        if(isNight)
+        {
+            world.SetState("IsNight", 1);
+        }
+        else
+        {
+            world.RemoveState("IsNight");
+        }
     }
 
-    //Return the states
+    /// <summary>
+    /// Constructor for quick creation.
+    /// </summary>
+    private GWorld() { }
+
+    /// <summary>
+    /// Return the states.
+    /// </summary>
+    /// <returns>The world states.</returns>
     public WorldStates GetWorld()
     {
         return world;
