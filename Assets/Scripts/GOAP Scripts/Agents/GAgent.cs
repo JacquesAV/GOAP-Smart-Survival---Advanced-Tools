@@ -80,6 +80,15 @@ public class GAgent : MonoBehaviour
     /// </summary>
     public void Start()
     {
+        // Clear agent of potentially old data.
+        goals.Clear();
+        actions.Clear();
+        beliefs = new WorldStates();
+        actionQueue.Clear();
+        currentGoal = null;
+        currentAction = null;
+        planner = null;
+
         // Get the navmesh agent from the attached agent.
         navAgent = gameObject.GetComponent<NavMeshAgent>();
 
@@ -102,14 +111,12 @@ public class GAgent : MonoBehaviour
     }
 
     /// <summary>
-    /// Late update is called once per end of frame.
+    /// Update is called once per frame.
     /// </summary>
-    public void LateUpdate()
+    public void Update()
     {
         RunAgentLogic();
         CorrectSpriteOrientation();
-
-        //navAgent.path.status = NavMeshPathStatus.PathComplete;
     }
 
     /// <summary>

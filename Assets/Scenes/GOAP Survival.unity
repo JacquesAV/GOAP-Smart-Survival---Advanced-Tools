@@ -399,15 +399,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50076b2c502e1534d8ee2c599f3d0925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseSurvivalChance: 0
-  darknessPenalty: 0
-  hungerPenalty: 0
+  baseSurvivalChance: 50
+  darknessPenalty: 25
+  hungerPenalty: 25
   foodGenerator: {fileID: 1299173444}
---- !u!1 &785447536 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7157662842060049317, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
-  m_PrefabInstance: {fileID: 7157662842778317269}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &785447537 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
@@ -10298,10 +10293,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5459764963503566487, guid: 035ee737bc09d044c8973159bb959006, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 785447536}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 035ee737bc09d044c8973159bb959006, type: 3}
 --- !u!1001 &7157662842778317269

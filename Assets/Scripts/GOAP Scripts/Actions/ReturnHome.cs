@@ -11,11 +11,24 @@ public class ReturnHome : GAction
     /// <returns>If successfully pre performed.</returns>
     public override bool PrePerform()
     {
-        // If no target exists, then fail to begin action.
+        // Try and find food on the map.
+        target = GetClosestAvailableActionPointTarget(GWorld.homePoints);
+
+        // If no target then fail to begin action.
         if (target == null)
         {
             return false;
         }
+
+        // Get the action point.
+        targetActionPoint = target.GetComponent<ActionPoint>();
+
+        // Check and reserve if the action point allows for early reservation.
+        if (targetActionPoint.GlobalAllowance)
+        {
+            targetActionPoint.ReserveActionPoint(gAgent);
+        }
+
         return true;
     }
 
@@ -25,7 +38,32 @@ public class ReturnHome : GAction
     /// <returns>If successfully intra performed.</returns>
     public override bool IntraPerform()
     {
-        throw new System.NotImplementedException();
+        // Check if the action point still exists.
+        if (target == null || targetActionPoint == null)
+        {
+            Debug.Log("Action point dissapeared too early!");
+            return false;
+        }
+
+        // Check if action point has no space and is not reserved by self.
+        if (!targetActionPoint.HasReservedActionPoint(gAgent) && !targetActionPoint.CheckForSpace())
+        {
+            return false;
+        }
+
+        // Check if action point is dynamically moving and update destination.
+        if (targetActionPoint.IsDynamicallyMoving)
+        {
+            navAgent.SetDestination(target.transform.position);
+        }
+
+        // Check if action point is still accessible.
+        if (!gAgent.IsPathPending && !gAgent.HasPath)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
