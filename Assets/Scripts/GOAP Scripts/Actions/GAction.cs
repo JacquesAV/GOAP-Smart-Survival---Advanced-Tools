@@ -210,8 +210,8 @@ public abstract class GAction : MonoBehaviour
             }
 
             // Sampled positions.
-            NavMesh.SamplePosition(this.transform.position, out NavMeshHit originHit, gAgent.goalDistanceSentitivity/2, NavMesh.AllAreas);
-            NavMesh.SamplePosition(target.transform.position, out NavMeshHit destinationHit, gAgent.goalDistanceSentitivity/2, NavMesh.AllAreas);
+            NavMesh.SamplePosition(this.transform.position, out NavMeshHit originHit, gAgent.goalDistanceSentitivity / 2, NavMesh.AllAreas);
+            NavMesh.SamplePosition(target.transform.position, out NavMeshHit destinationHit, gAgent.goalDistanceSentitivity / 2, NavMesh.AllAreas);
 
             // Calculate a path and continue if valid.
             if (originHit.hit && destinationHit.hit && NavMesh.CalculatePath(originHit.position, destinationHit.position, NavMesh.AllAreas, path))
@@ -230,7 +230,6 @@ public abstract class GAction : MonoBehaviour
                     }
                 }
             }
-            //Debug.Log(target.name + " | " + path.status);
         }
 
         return closestObject;

@@ -10,19 +10,19 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// The base chance for an agent to survive a given day.
     /// </summary>
     [Range(0, 100)]
-    public readonly float baseSurvivalChance;
+    public float baseSurvivalChance = 50;
 
     /// <summary>
     /// The penalty to an agents survival if they are caught in the dark at the end of the day
     /// </summary>
     [Range(0, 100)]
-    public readonly float darknessPenalty;
+    public float darknessPenalty = 25;
 
     /// <summary>
     /// The penalty to an agents survival if they are caught hungry at the end of the day.
     /// </summary>
     [Range(0, 100)]
-    public readonly float hungerPenalty;
+    public float hungerPenalty = 25;
 
     /// <summary>
     /// Declaration with automatic getters and setters for the active survival manager
@@ -32,13 +32,29 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// <summary>
     /// Set the singleton to this instance.
     /// </summary>
-    public void Awake() => SingletonManager = this;
+    private void Awake() => SingletonManager = this;
+
+    [Header("Simulation Components")]
+    /// <summary>
+    /// The generator object for food in the simulation.
+    /// </summary>
+    [SerializeField]
+
+    private FoodGenerator foodGenerator;
 
     /// <summary>
     /// Debugs the amount of food gathered by the agent.
     /// </summary>
     /// <param name="foodCount">The amount of food delivered.</param>
     public void DebugFood(int foodCount) => Debug.Log(string.Concat("Food: ", foodCount));
+
+    /// <summary>
+    /// Initialize core functionalities of the simulation.
+    /// </summary>
+    public void Start()
+    {
+        foodGenerator.GenerateFoodInArea();
+    }
 
     /// <summary>
     /// Listen for keyboard input in temporary method for changing night state.

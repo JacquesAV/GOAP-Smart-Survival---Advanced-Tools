@@ -23,11 +23,6 @@ public class FoodGenerator : MonoBehaviour
     public Vector2Int dimensions;
 
     /// <summary>
-    /// The dimensions to define the area in which food should be spawned.
-    /// </summary>
-    public bool useQuadrants;
-
-    /// <summary>
     /// Grid that represents where food should be created.
     /// </summary>
     public bool[,] foodSpawnGrid;
@@ -35,15 +30,7 @@ public class FoodGenerator : MonoBehaviour
     /// <summary>
     /// Grid that represents where food is being created.
     /// </summary>
-    public List<GameObject> foodList;
-
-    /// <summary>
-    /// Start is called before the first frame update.
-    /// </summary>
-    private void Start()
-    {
-        GenerateFoodInArea();
-    }
+    public List<GameObject> foodList = new List<GameObject>();
 
     /// <summary>
     /// Generate food points within the spawn region.
@@ -64,8 +51,8 @@ public class FoodGenerator : MonoBehaviour
             }
         }
 
-        // Mark positions for food.
-        for (int i = 0; i <= foodCount; i++)
+        // Mark random positions in the grid as food.
+        for (int i = 0; i < foodCount; i++)
         {
             Vector2Int randomPosition = availablePositions[Random.Range(0, availablePositions.Count)];
             availablePositions.Remove(randomPosition);
@@ -78,24 +65,16 @@ public class FoodGenerator : MonoBehaviour
             for (int y = 0; y < foodSpawnGrid.GetLength(1); y++)
             {
                 // Spawn food if marked for spawning.
-                if(foodSpawnGrid[x, y])
+                if (foodSpawnGrid[x, y])
                 {
+                    // Instantiate and save the food.
                     GameObject food = Instantiate(foodPrefab, this.transform);
                     foodList.Add(food);
-                    food.transform.position += new Vector3Int(x, y, 0)/2;
+
+                    // Place the food on the intended grid position around the generator.
+                    food.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
                 }
             }
-        }
-    }
-
-    /// <summary>
-    /// Generate food points within given parameters.
-    /// </summary>
-    private void GenerateFoodInGivenArea(Vector2Int givenDimensions, int givenSpawnCount)
-    {
-        for (int i = 0; i < givenSpawnCount; i++)
-        {
-            
         }
     }
 

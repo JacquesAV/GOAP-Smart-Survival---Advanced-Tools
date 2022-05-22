@@ -25,4 +25,16 @@ public static class ExtensionMethods
 
         return remainingDistance;
     }
+
+    /// <summary>
+    /// Enum that represents quadrants.
+    /// </summary>
+    public enum Quadrant 
+    {
+        Undefined = 0,
+        UpperRight,
+        UpperLeft,
+        LowerLeft,
+        LowerRight
+    }
 }
