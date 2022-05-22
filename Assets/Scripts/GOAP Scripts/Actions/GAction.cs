@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,6 +22,11 @@ public abstract class GAction : MonoBehaviour
     /// Current target object for interaction.
     /// </summary>
     public GameObject target;
+
+    /// <summary>
+    /// Current target object for interaction.
+    /// </summary>
+    public ActionPoint targetActionPoint;
 
     /// <summary>
     /// Tag for the target.
@@ -172,6 +178,12 @@ public abstract class GAction : MonoBehaviour
     public abstract bool PrePerform();
 
     /// <summary>
+    /// Abstract method for intra performing an action.
+    /// </summary>
+    /// <returns>If sucessfully performed.</returns>
+    public abstract bool IntraPerform();
+
+    /// <summary>
     /// Abstract method for post performing an action.
     /// </summary>
     /// <returns>If sucessfully performed.</returns>
@@ -180,7 +192,7 @@ public abstract class GAction : MonoBehaviour
     /// <summary>
     /// Get the closest target for interaction.
     /// </summary>
-    /// <param name="targets">List of valid targets.</param>
+    /// <param name="targets">List of potential targets.</param>
     /// <returns>The closest target.</returns>
     public GameObject GetClosestTarget(List<GameObject> targets)
     {
@@ -198,8 +210,8 @@ public abstract class GAction : MonoBehaviour
             }
 
             // Sampled positions.
-            NavMesh.SamplePosition(this.transform.position, out NavMeshHit originHit, 1.0f, NavMesh.AllAreas);
-            NavMesh.SamplePosition(target.transform.position, out NavMeshHit destinationHit, 1.0f, NavMesh.AllAreas);
+            NavMesh.SamplePosition(this.transform.position, out NavMeshHit originHit, gAgent.goalDistanceSentitivity/2, NavMesh.AllAreas);
+            NavMesh.SamplePosition(target.transform.position, out NavMeshHit destinationHit, gAgent.goalDistanceSentitivity/2, NavMesh.AllAreas);
 
             // Calculate a path and continue if valid.
             if (originHit.hit && destinationHit.hit && NavMesh.CalculatePath(originHit.position, destinationHit.position, NavMesh.AllAreas, path))
@@ -223,6 +235,31 @@ public abstract class GAction : MonoBehaviour
 
         return closestObject;
     }
+
+    /// <summary>
+    /// Get the closest target with an available action point for interaction.
+    /// </summary>
+    /// <param name="targets">List of potential targets.</param>
+    /// <returns>The closest target with an available action point.</returns>
+    public GameObject GetClosestAvailableActionPointTarget(List<GameObject> targets)
+    {
+        // Temporary list of targets with available action points.
+        List<GameObject> actionPointTargets = new List<GameObject>();
+
+        // Populate the list with valid targets.
+        for (int i = targets.Count - 1; i >= 0; i--)
+        {
+            GameObject potentialTarget = targets[i];
+            if(potentialTarget.TryGetComponent(out ActionPoint point) && point.CheckForSpace())
+            {
+                actionPointTargets.Add(potentialTarget);
+            }
+        }
+
+        // Check for the closest valid target.
+        return GetClosestTarget(targets);
+    }
+
     public static bool GetPath(NavMeshPath path, Vector3 fromPos, Vector3 toPos, int passableMask)
     {
         path.ClearCorners();

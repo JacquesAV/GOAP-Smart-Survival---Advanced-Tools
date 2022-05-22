@@ -20,6 +20,15 @@ public class ReturnHome : GAction
     }
 
     /// <summary>
+    /// Intra perform, where checks are made during the course of traveling to an action.
+    /// </summary>
+    /// <returns>If successfully intra performed.</returns>
+    public override bool IntraPerform()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <summary>
     /// Post perform, where any results of the action are applied to the agent.
     /// </summary>
     /// <returns>If successfully post performed.</returns>

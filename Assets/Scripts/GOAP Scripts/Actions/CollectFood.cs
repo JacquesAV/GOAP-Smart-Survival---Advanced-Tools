@@ -18,13 +18,57 @@ public class CollectFood : GAction
     public override bool PrePerform()
     {
         // Try and find food on the map.
-        target = GetClosestTarget(GWorld.foodPoints);
+        target = GetClosestAvailableActionPointTarget(GWorld.foodPoints);
 
         // If no target or at capacity, then fail to begin action.
         if (target == null || HasReachedCapacity())
         {
             return false;
         }
+
+        // Get the action point.
+        targetActionPoint = target.GetComponent<ActionPoint>();
+
+        // Check and reserve if the action point allows for early reservation.
+        if(targetActionPoint.GlobalAllowance)
+        {
+            targetActionPoint.ReserveActionPoint(gAgent);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Intra perform, where checks are made during the course of traveling to an action.
+    /// </summary>
+    /// <returns>If successfully intra performed.</returns>
+    public override bool IntraPerform()
+    {
+        // Check if the action point still exists.
+        if (target == null || targetActionPoint == null)
+        {
+            Debug.Log("Action point dissapeared too early!");
+            return false;
+        }
+
+        // Check if action point has no space and is not reserved by self.
+        if (!targetActionPoint.HasReservedActionPoint(gAgent) && !targetActionPoint.CheckForSpace())
+        {
+            return false;
+        }
+
+        // Check if action point is dynamically moving and update destination.
+        if (targetActionPoint.IsDynamicallyMoving)
+        {
+            navAgent.SetDestination(target.transform.position);
+        }
+
+        // Check if action point is still accessible.
+        if (!gAgent.IsPathPending && !gAgent.HasPath)
+        {
+            return false;
+        }
+
         return true;
     }
 

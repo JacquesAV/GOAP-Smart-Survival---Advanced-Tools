@@ -64,6 +64,18 @@ public class GAgent : MonoBehaviour
     private bool invoked = false;
 
     /// <summary>
+    /// Quick bool return for if the agent is still calculating a path.
+    /// </summary>
+    /// <returns>If the path is still pending for calculation.</returns>
+    public bool IsPathPending => navAgent.pathPending;
+
+    /// <summary>
+    /// Quick bool return for if the agent has a path.
+    /// </summary>
+    /// <returns>If the path is complete to the target.</returns>
+    public bool HasPath => navAgent.hasPath;
+
+    /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
     public void Start()
@@ -96,6 +108,8 @@ public class GAgent : MonoBehaviour
     {
         RunAgentLogic();
         CorrectSpriteOrientation();
+
+        //navAgent.path.status = NavMeshPathStatus.PathComplete;
     }
 
     /// <summary>
@@ -127,9 +141,16 @@ public class GAgent : MonoBehaviour
         // If the current action is not currently executing.
         if (currentAction != null && currentAction.running)
         {
-            // Check the agent has a goal, a path to the goal that is valid, and has reached that goal.
-            // For now this check does not include navmesh elements due to issues in it.
-            if (Vector3.Distance(currentAction.target.transform.position, transform.position) <= goalDistanceSentitivity)// && currentAction.navAgent.hasPath && currentAction.agent.remainingDistance <= goalDistanceSentitivity)
+            // Check if the current action is still valid during transition and cancel if not.
+            if (!currentAction.IntraPerform() && !invoked)
+            {
+                currentAction.targetActionPoint.UnreserveActionPoint(this);
+                currentAction = null;
+                return;
+            }
+
+            // Check that the agent has reached its goal
+            if (Vector3.Distance(currentAction.target.transform.position, transform.position) <= goalDistanceSentitivity) //&& currentAction.agent.remainingDistance <= goalDistanceSentitivity)
             {
                 // If not yet invoked, then attempt to perform it.
                 if (!invoked)
@@ -137,6 +158,12 @@ public class GAgent : MonoBehaviour
                     // Will complete the action after the actions duration.
                     Invoke(nameof(CompleteAction), currentAction.duration);
                     invoked = true;
+
+                    // Reserve the action point if applicable.
+                    if (currentAction.targetActionPoint && !currentAction.targetActionPoint.GlobalAllowance)
+                    {
+                        currentAction.targetActionPoint.ReserveActionPoint(this);
+                    }
                 }
             }
             return;
@@ -191,6 +218,7 @@ public class GAgent : MonoBehaviour
             if (currentAction.PrePerform())
             {
                 // If a target is not yet selected, find it.
+                // Ideally this shouldnt happen and shouls be handles in the PrePerform.
                 if (currentAction.target == null && currentAction.targetTag != "")
                 {
                     currentAction.target = GameObject.FindWithTag(currentAction.targetTag);
