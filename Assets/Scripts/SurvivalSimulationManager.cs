@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -39,8 +40,28 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// The generator object for food in the simulation.
     /// </summary>
     [SerializeField]
-
     private FoodGenerator foodGenerator;
+
+    /// <summary>
+    /// The generator object for food in the simulation.
+    /// </summary>
+    [SerializeField]
+    private List<HomeActionPoint> homeActionPoints;
+
+    /// <summary>
+    /// List of agent prefabs to be used in the simulation.
+    /// </summary>
+    private List<GameObject> agentPrefabs;
+
+    /// <summary>
+    /// List of active agents in the simulation.
+    /// </summary>
+    private List<GameObject> activeAgents = new List<GameObject>();
+
+    /// <summary>
+    /// Temporary agent prefab for testing.
+    /// </summary>
+    public GameObject temporaryAgent;
 
     /// <summary>
     /// Debugs the amount of food gathered by the agent.
@@ -53,7 +74,21 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// </summary>
     public void Start()
     {
+        // Clear the current list of agents in case of carry over.
+        activeAgents.Clear();
+
+        // Generate food for the simulation.
         foodGenerator.GenerateFoodInArea();
+
+        // Temporary new list for testing.
+        List<GameObject> testingAgentList = new List<GameObject>();
+        testingAgentList.Populate(temporaryAgent, 8);
+
+        // For now use just one prefab repeatedly.
+        foreach (HomeActionPoint home in homeActionPoints)
+        {
+            activeAgents.AddRange(home.GenerateAgentsInArea(testingAgentList));
+        }
     }
 
     /// <summary>

@@ -84,7 +84,7 @@ public class GAgent : MonoBehaviour
         goals.Clear();
         actions.Clear();
         beliefs = new WorldStates();
-        actionQueue.Clear();
+        actionQueue = null;
         currentGoal = null;
         currentAction = null;
         planner = null;

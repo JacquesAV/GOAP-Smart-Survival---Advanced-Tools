@@ -403,6 +403,7 @@ MonoBehaviour:
   darknessPenalty: 25
   hungerPenalty: 25
   foodGenerator: {fileID: 1299173444}
+  homeActionPoints: []
 --- !u!4 &785447537 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
@@ -769,7 +770,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2069710513
-  m_SortingLayer: 5
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -2209,7 +2210,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 795455459
-  m_SortingLayer: 1
+  m_SortingLayer: -2
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -10293,6 +10294,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5459764963503566475, guid: 035ee737bc09d044c8973159bb959006, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 035ee737bc09d044c8973159bb959006, type: 3}
 --- !u!1001 &7157662842778317269
@@ -10302,6 +10307,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1873696574}
     m_Modifications:
+    - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
+      propertyPath: agentLimitCount
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
       value: 0

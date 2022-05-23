@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7157662842060049316}
   - component: {fileID: 7157662842060049318}
   - component: {fileID: 7157662842060049319}
-  - component: {fileID: 6778862738562974108}
+  - component: {fileID: 1773529465890109957}
   m_Layer: 0
   m_Name: HomePoint
   m_TagString: HomePoint
@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7157662842060049317}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -14.5, y: 17.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -70,8 +70,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 810113045
-  m_SortingLayer: 4
+  m_SortingLayerID: -1515562705
+  m_SortingLayer: -1
   m_SortingOrder: 1
   m_Sprite: {fileID: 1184451670209623173, guid: 713c2f08c00fdd541b00b2e4f662b98d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -110,7 +110,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 5, y: 5}
   m_EdgeRadius: 0
---- !u!114 &6778862738562974108
+--- !u!114 &1773529465890109957
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7157662842060049317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1de9eace1c030d4aa331206079d48a7, type: 3}
+  m_Script: {fileID: 11500000, guid: 28e00b01266a968409d370230fe740de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   occupyingAgents: []
@@ -127,3 +127,4 @@ MonoBehaviour:
   usingAgentLimits: 1
   isDynamicallyMoving: 0
   globalReservation: 1
+  dimensions: {x: 5, y: 5}

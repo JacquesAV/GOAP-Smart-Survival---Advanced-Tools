@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.XR.Oculus.Input;
 using UnityEngine;
 
 /// <summary>
@@ -17,7 +16,8 @@ public class ActionPoint : MonoBehaviour
     /// How many agents are capabe of occupying the action point at once.
     /// </summary>
     [SerializeField]
-    private int agentLimitCount = 1;
+    [Range(0, 50)]
+    protected int agentLimitCount = 1;
 
     /// <summary>
     /// If the action point should restrict the number of agents that can interact with it at a time.
