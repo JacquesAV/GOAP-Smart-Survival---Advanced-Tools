@@ -111,9 +111,9 @@ public class GAgent : MonoBehaviour
     }
 
     /// <summary>
-    /// Update is called once per frame.
+    /// Late update is called once per frame.
     /// </summary>
-    public void Update()
+    public void LateUpdate()
     {
         RunAgentLogic();
         CorrectSpriteOrientation();
@@ -162,15 +162,15 @@ public class GAgent : MonoBehaviour
                 // If not yet invoked, then attempt to perform it.
                 if (!invoked)
                 {
-                    // Will complete the action after the actions duration.
-                    Invoke(nameof(CompleteAction), currentAction.duration);
-                    invoked = true;
-
                     // Reserve the action point if applicable.
                     if (currentAction.targetActionPoint && !currentAction.targetActionPoint.GlobalAllowance)
                     {
                         currentAction.targetActionPoint.ReserveActionPoint(this);
                     }
+
+                    // Will complete the action after the actions duration.
+                    Invoke(nameof(CompleteAction), currentAction.duration);
+                    invoked = true;
                 }
             }
             return;
@@ -211,6 +211,7 @@ public class GAgent : MonoBehaviour
                 // Remove the goal.
                 goals.Remove(currentGoal);
             }
+
             // Nullify the planner in order to force the formation of a new plan.
             planner = null;
         }
@@ -225,10 +226,11 @@ public class GAgent : MonoBehaviour
             if (currentAction.PrePerform())
             {
                 // If a target is not yet selected, find it.
-                // Ideally this shouldnt happen and shouls be handles in the PrePerform.
+                // Ideally this shouldnt happen and should be handled in the PrePerform.
                 if (currentAction.target == null && currentAction.targetTag != "")
                 {
                     currentAction.target = GameObject.FindWithTag(currentAction.targetTag);
+                    Debug.LogWarning("Had to manually try and find a target, caution!");
                 }
 
                 // If the target is not null (valid target).
@@ -246,6 +248,11 @@ public class GAgent : MonoBehaviour
                 // Force a new plan by nullifying the queue.
                 actionQueue = null;
             }
+        }
+        else
+        {
+            // Reset the path so agents dont keep moving to old locations.
+            navAgent.ResetPath();
         }
     }
 

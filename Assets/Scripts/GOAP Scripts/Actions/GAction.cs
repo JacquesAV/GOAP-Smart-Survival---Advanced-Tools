@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -138,10 +137,11 @@ public abstract class GAction : MonoBehaviour
     }
 
     /// <summary>
-    /// If action can be completed.
+    /// If action can be completed. For now just return true.
+    /// TODO - Implement system to pre-check achievability.
     /// </summary>
     /// <returns>If the action can be achieved.</returns>
-    public bool IsAchievable() => PrePerform();
+    public bool IsAchievable() => true;
 
     /// <summary>
     /// If action can be completed based on set of pre-conditions or set of anti-conditions.
@@ -256,7 +256,7 @@ public abstract class GAction : MonoBehaviour
         }
 
         // Check for the closest valid target.
-        return GetClosestTarget(targets);
+        return GetClosestTarget(actionPointTargets);
     }
 
     public static bool GetPath(NavMeshPath path, Vector3 fromPos, Vector3 toPos, int passableMask)

@@ -64,6 +64,11 @@ public class SurvivalSimulationManager : MonoBehaviour
     public GameObject temporaryAgent;
 
     /// <summary>
+    /// Temporary int for agent spawning.
+    /// </summary>
+    public int temporaryAgentsPerArea;
+
+    /// <summary>
     /// Debugs the amount of food gathered by the agent.
     /// </summary>
     /// <param name="foodCount">The amount of food delivered.</param>
@@ -78,11 +83,12 @@ public class SurvivalSimulationManager : MonoBehaviour
         activeAgents.Clear();
 
         // Generate food for the simulation.
+        foodGenerator.RemoveFood();
         foodGenerator.GenerateFoodInArea();
 
         // Temporary new list for testing.
         List<GameObject> testingAgentList = new List<GameObject>();
-        testingAgentList.Populate(temporaryAgent, 8);
+        testingAgentList.Populate(temporaryAgent, temporaryAgentsPerArea);
 
         // For now use just one prefab repeatedly.
         foreach (HomeActionPoint home in homeActionPoints)

@@ -761,7 +761,7 @@ MonoBehaviour:
   target: {fileID: 0}
   targetActionPoint: {fileID: 0}
   targetTag: FoodPoint
-  duration: 1
+  duration: 2.5
   antiConditions:
   - key: IsNight
     value: 0

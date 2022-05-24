@@ -79,6 +79,18 @@ public class FoodGenerator : MonoBehaviour
     }
 
     /// <summary>
+    /// Removes/destroys all remaining food being tracked.
+    /// </summary>
+    public void RemoveFood()
+    {
+        for (int i = foodList.Count - 1; i >= 0; i--)
+        {
+            Destroy(foodList[i]);
+        }
+        foodList.Clear();
+    }
+
+    /// <summary>
     /// Draw a visual representation of the area in which food will be generated.
     /// </summary>
     private void OnDrawGizmosSelected()

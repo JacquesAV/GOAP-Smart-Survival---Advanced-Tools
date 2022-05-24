@@ -20,8 +20,8 @@ public class GPlanner
 
         // If an action is achievable, then this will be added to the usable actions.
         // This clears the list of unusable actions that would otherwise clutter the list.
-        foreach (GAction a in actions) {
-
+        foreach (GAction a in actions) 
+        {
             if (a.IsAchievable())
             {
                 usableActions.Add(a);
@@ -140,7 +140,7 @@ public class GPlanner
                     branches.Add(node);
                     foundActionPath = true;
 
-                    Debug.Log("path was found");
+                    Debug.Log("Path was found");
                 }
                 // If no path was found, move onto the next node.
                 else

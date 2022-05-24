@@ -67,11 +67,11 @@ public class SurvivalAgent : GAgent
     }
 
     /// <summary>
-    /// Update visual elements.
+    /// Late update visual elements.
     /// </summary>
-    new void Update()
+    new void LateUpdate()
     {
-        base.Update();
+        base.LateUpdate();
         UpdateStatusText();
         UpdateSurvivalChanceBar();
     }

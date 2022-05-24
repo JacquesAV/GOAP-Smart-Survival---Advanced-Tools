@@ -30,7 +30,7 @@ public class CollectFood : GAction
         targetActionPoint = target.GetComponent<ActionPoint>();
 
         // Check and reserve if the action point allows for early reservation.
-        if(targetActionPoint.GlobalAllowance)
+        if (targetActionPoint.GlobalAllowance)
         {
             targetActionPoint.ReserveActionPoint(gAgent);
         }

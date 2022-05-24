@@ -49,8 +49,6 @@ public sealed class GWorld
             world.ModifyState("FoodPointExists", foodPoints.Count);
         }
 
-        Debug.Log("World");
-
         // Set the belief of night.
         SetIsNight(false);
     }
