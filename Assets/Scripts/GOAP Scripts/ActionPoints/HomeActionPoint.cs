@@ -60,11 +60,8 @@ public class HomeActionPoint : ActionPoint
                             GameObject currentAgent = agentsToSpawn.Dequeue();
 
                             // Instantiate and save the agent.
-                            GameObject agent = Instantiate(currentAgent);
+                            GameObject agent = Instantiate(currentAgent, this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0), Quaternion.identity);
                             instantiatedAgents.Add(agent);
-
-                            // Place the food on the intended grid position around the generator.
-                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
                         }
                     }
                     else
@@ -81,11 +78,8 @@ public class HomeActionPoint : ActionPoint
                             GameObject currentAgent = agentsToSpawn.Dequeue();
 
                             // Instantiate and save the agent.
-                            GameObject agent = Instantiate(currentAgent);
+                            GameObject agent = Instantiate(currentAgent, this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0), Quaternion.identity);
                             instantiatedAgents.Add(agent);
-
-                            // Place the food on the intended grid position around the generator.
-                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
                         }
                     }
                 }
@@ -109,11 +103,8 @@ public class HomeActionPoint : ActionPoint
                             GameObject currentAgent = agentsToSpawn.Dequeue();
 
                             // Instantiate and save the agent.
-                            GameObject agent = Instantiate(currentAgent);
+                            GameObject agent = Instantiate(currentAgent, this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0), Quaternion.identity);
                             instantiatedAgents.Add(agent);
-
-                            // Place the food on the intended grid position around the generator.
-                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
                         }
                     }
                     else
@@ -130,11 +121,8 @@ public class HomeActionPoint : ActionPoint
                             GameObject currentAgent = agentsToSpawn.Dequeue();
 
                             // Instantiate and save the agent.
-                            GameObject agent = Instantiate(currentAgent);
+                            GameObject agent = Instantiate(currentAgent, this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0), Quaternion.identity);
                             instantiatedAgents.Add(agent);
-
-                            // Place the food on the intended grid position around the generator.
-                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
                         }
                     }
                 }
