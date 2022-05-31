@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -57,18 +56,19 @@ public static class ExtensionMethods
     /// Shuffles the element order of the specified list.
     /// Smooth Foundations Method.
     /// </summary>
-    /// <typeparam name="T">Generid type for the list content.</typeparam>
-    /// <param name="ts">The list being shuffled.</param>
-    public static void Shuffle<T>(this IList<T> ts)
+    /// <typeparam name="T">Generic type for the list content.</typeparam>
+    /// <param name="givenList">The list being shuffled.</param>
+    public static void Shuffle<T>(this IList<T> givenList)
     {
-        var count = ts.Count;
-        var last = count - 1;
-        for (var i = 0; i < last; ++i)
+        int count = givenList.Count;
+        int last = count - 1;
+
+        for (int i = 0; i < last; ++i)
         {
-            var r = UnityEngine.Random.Range(i, count);
-            var tmp = ts[i];
-            ts[i] = ts[r];
-            ts[r] = tmp;
+            int randomIndex = UnityEngine.Random.Range(i, count);
+            T temporaryItem = givenList[i];
+            givenList[i] = givenList[randomIndex];
+            givenList[randomIndex] = temporaryItem;
         }
     }
 

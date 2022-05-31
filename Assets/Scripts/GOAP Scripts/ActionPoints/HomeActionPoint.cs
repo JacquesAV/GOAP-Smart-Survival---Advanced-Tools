@@ -13,6 +13,16 @@ public class HomeActionPoint : ActionPoint
     private Vector2Int dimensions;
 
     /// <summary>
+    /// Bool to flip the spawning location of the agents.
+    /// </summary>
+    public bool verticalFlip;
+
+    /// <summary>
+    /// Bool to flip the spawning location of the agents.
+    /// </summary>
+    public bool horizontalFlip;
+
+    /// <summary>
     /// Generate food points within the spawn region.
     /// </summary>
     /// <param name="agents">The agents to create in the area.</param>
@@ -31,26 +41,102 @@ public class HomeActionPoint : ActionPoint
         // For as long as agents remain to be created, keep spawning within the designated area.
         while (agentsToSpawn.Count > 0)
         {
-            //Generate food based on the marked locations.
-            for (int x = 0; x < dimensions.x; x++)
+            if(verticalFlip)
             {
-                for (int y = 0; y < dimensions.y; y++)
+                //Generate food based on the marked locations.
+                for (int x = dimensions.x - 1; x >= 0; x--)
                 {
-                    // Return early with list of instantiated agents if done with spawning.
-                    if (agentsToSpawn.Count == 0)
+                    if (horizontalFlip)
                     {
-                        return instantiatedAgents;
+                        for (int y = 0; y < dimensions.y; y++)
+                        {
+                            // Return early with list of instantiated agents if done with spawning.
+                            if (agentsToSpawn.Count == 0)
+                            {
+                                return instantiatedAgents;
+                            }
+
+                            // Dequeue the current agent to spawn.
+                            GameObject currentAgent = agentsToSpawn.Dequeue();
+
+                            // Instantiate and save the agent.
+                            GameObject agent = Instantiate(currentAgent);
+                            instantiatedAgents.Add(agent);
+
+                            // Place the food on the intended grid position around the generator.
+                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
+                        }
                     }
+                    else
+                    {
+                        for (int y = dimensions.y - 1; y >= 0; y--)
+                        {
+                            // Return early with list of instantiated agents if done with spawning.
+                            if (agentsToSpawn.Count == 0)
+                            {
+                                return instantiatedAgents;
+                            }
 
-                    // Dequeue the current agent to spawn.
-                    GameObject currentAgent = agentsToSpawn.Dequeue();
+                            // Dequeue the current agent to spawn.
+                            GameObject currentAgent = agentsToSpawn.Dequeue();
 
-                    // Instantiate and save the agent.
-                    GameObject agent = Instantiate(currentAgent);
-                    instantiatedAgents.Add(agent);
+                            // Instantiate and save the agent.
+                            GameObject agent = Instantiate(currentAgent);
+                            instantiatedAgents.Add(agent);
 
-                    // Place the food on the intended grid position around the generator.
-                    agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
+                            // Place the food on the intended grid position around the generator.
+                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //Generate food based on the marked locations.
+                for (int x = 0; x < dimensions.x; x++)
+                {
+                    if (horizontalFlip)
+                    {
+                        for (int y = 0; y < dimensions.y; y++)
+                        {
+                            // Return early with list of instantiated agents if done with spawning.
+                            if (agentsToSpawn.Count == 0)
+                            {
+                                return instantiatedAgents;
+                            }
+
+                            // Dequeue the current agent to spawn.
+                            GameObject currentAgent = agentsToSpawn.Dequeue();
+
+                            // Instantiate and save the agent.
+                            GameObject agent = Instantiate(currentAgent);
+                            instantiatedAgents.Add(agent);
+
+                            // Place the food on the intended grid position around the generator.
+                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
+                        }
+                    }
+                    else
+                    {
+                        for (int y = dimensions.y - 1; y >= 0; y--)
+                        {
+                            // Return early with list of instantiated agents if done with spawning.
+                            if (agentsToSpawn.Count == 0)
+                            {
+                                return instantiatedAgents;
+                            }
+
+                            // Dequeue the current agent to spawn.
+                            GameObject currentAgent = agentsToSpawn.Dequeue();
+
+                            // Instantiate and save the agent.
+                            GameObject agent = Instantiate(currentAgent);
+                            instantiatedAgents.Add(agent);
+
+                            // Place the food on the intended grid position around the generator.
+                            agent.transform.position = this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0);
+                        }
+                    }
                 }
             }
         }
