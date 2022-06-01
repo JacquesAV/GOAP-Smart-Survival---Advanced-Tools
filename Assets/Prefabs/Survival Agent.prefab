@@ -661,7 +661,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5459764963503566473}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -669,7 +669,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.25
+  m_Radius: 0.05
 --- !u!195 &5459764963503566486
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -680,7 +680,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1923039037
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 2.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -710,11 +710,11 @@ MonoBehaviour:
   goalDistanceSentitivity: 1.5
   returnHomePriority: 20
   foodCollectionPriority: 10
-  survivalChance: 0
-  agentSpeed: 0
-  agentHardiness: 0
+  baseSpeed: 2.5
+  agentHardinessOverSpeed: 0.5
   statusText: {fileID: 5459764964317370391}
   survivalBar: {fileID: 802374187522421506}
+  isDead: 1
 --- !u!114 &3117043053806418979
 MonoBehaviour:
   m_ObjectHideFlags: 0

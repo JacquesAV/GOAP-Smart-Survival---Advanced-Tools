@@ -20,20 +20,51 @@ public class SurvivalAgent : GAgent
 
     [Header("Agent Genes")]
     /// <summary>
+    /// The base speed for the agent.
+    /// </summary>
+    [Range(0, 10)]
+    public float baseSpeed = 2.5f;
+
+    /// <summary>
+    /// The active speed for the agents.
+    /// </summary>
+    private float finalSpeed;
+
+    /// <summary>
+    /// The natural hardiness of the agent, granting a higher base chance of survival over
+    /// the natural speed of the agent, granting a higher movement speed.
+    /// </summary>
+    [Range(0, 1)]
+    public float agentHardinessOverSpeed = 0.5f;
+
+    /// <summary>
+    /// The likelihood an agent will share excess food at the end of the day.
+    /// </summary>
+    [Range(0, 1)]
+    public float agentGenerosity = 0.5f;
+
+    [Header("Miscellaneous")]
+    /// <summary>
+    /// Boolean to track if the agent is considered dead or alive.
+    /// </summary>
+    public bool isDead = true;
+
+    /// <summary>
+    /// Boolean to track if the agent is considered dead or alive.
+    /// </summary>
+    public bool isAsleep = true;
+
+    /// <summary>
+    /// Boolean to track if the agent had gifted food.
+    /// </summary>
+    public bool wasGenerous = true;
+
+    /// <summary>
     /// The current survival chance that a given agent has.
     /// </summary>
-    public float survivalChance;
+    private float survivalChance;
 
-    /// <summary>
-    /// The natural speed of the agent, granting a higher movement speed.
-    /// </summary>
-    public float agentSpeed;
-
-    /// <summary>
-    /// The natural hardiness of the agent, granting a higher base chance of survival.
-    /// </summary>
-    public float agentHardiness;
-
+    [Header("UI")]
     /// <summary>
     /// Text to visually show the status of the agent.
     /// </summary>
@@ -43,6 +74,11 @@ public class SurvivalAgent : GAgent
     /// Slider to visually show the survival chance of the agent.
     /// </summary>
     public Slider survivalBar = null;
+
+    /// <summary>
+    /// Save the current survival simulation manager locally for ease of use.
+    /// </summary>
+    private readonly SurvivalSimulationManager SSM = SurvivalSimulationManager.SingletonManager;
 
     /// <summary>
     /// Start is called before the first frame update.
@@ -71,8 +107,12 @@ public class SurvivalAgent : GAgent
     /// </summary>
     new void LateUpdate()
     {
+        // Return early if agent is asleep.
+        if (isAsleep) return;
+
         base.LateUpdate();
         UpdateStatusText();
+        UpdateSurvivalChance();
         UpdateSurvivalChanceBar();
     }
 
@@ -105,5 +145,41 @@ public class SurvivalAgent : GAgent
             // Update survival chance level.
             survivalBar.value = survivalChance;
         }
+    }
+
+    /// <summary>
+    /// Updates the genes based on a given mutation range.
+    /// </summary>
+    /// <param name="mutationRange">The offset to apply to the genes.</param>
+    public void MutateGenes(float mutationRange)
+    {
+        // Apply a ranged offset to the genes in a random direction.
+        agentGenerosity = Mathf.Clamp01(agentGenerosity + Random.Range(-mutationRange, mutationRange));
+        agentHardinessOverSpeed = Mathf.Clamp01(agentHardinessOverSpeed + Random.Range(-mutationRange, mutationRange));
+
+        // Set the final speed.
+        finalSpeed = Mathf.Abs(SSM.hardinessSpeedCurve.Evaluate(agentHardinessOverSpeed) - 1) * SSM.speedInfluenceChange;
+        navAgent.speed = finalSpeed;
+    }
+
+    /// <summary>
+    /// Updates the survival chance based on food count and hardiness.
+    /// </summary>
+    public void UpdateSurvivalChance()
+    {
+        float foodChance = SSM.foodCurve.Evaluate((float)inventory.TotalFood / SSM.foodCapacity) * SSM.foodSurvivalBoost;
+        float hardinessChance = SSM.hardinessSpeedCurve.Evaluate(agentHardinessOverSpeed) * SSM.hardinessSurvivalBoost;
+        survivalChance = SSM.baseSurvivalChance + foodChance + hardinessChance;
+    }
+
+    /// <summary>
+    /// Rolls to check if the agent has died based on their survival chance
+    /// </summary>
+    /// <returns>If the agent has died.</returns>
+    public bool RollForIsDead()
+    {
+        bool temporaryIsDead = ExtensionMethods.ProbabilityCheck(survivalChance / 100);
+        isDead = temporaryIsDead;
+        return temporaryIsDead;
     }
 }

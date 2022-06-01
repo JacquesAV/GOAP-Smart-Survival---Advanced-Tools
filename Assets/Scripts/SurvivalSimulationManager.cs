@@ -6,13 +6,55 @@ using UnityEngine;
 /// </summary>
 public class SurvivalSimulationManager : MonoBehaviour
 {
-    [Header("Agent Settings")]
+    [Header("Survival Settings")]
+    /// <summary>
+    /// The range at which an agents gene can mutate.
+    /// </summary>
+    [Range(0, 1)]
+    public float mutationRange = 0.15f;
+
     /// <summary>
     /// The base chance for an agent to survive a given day.
     /// </summary>
     [Range(0, 100)]
     public float baseSurvivalChance = 50;
 
+    /// <summary>
+    /// How much food affects the survival chance.
+    /// </summary>
+    [Range(0, 100)]
+    public float foodSurvivalBoost = 25;
+
+    /// <summary>
+    /// How much hardiness affects the survival chance.
+    /// </summary>
+    [Range(0, 100)]
+    public float hardinessSurvivalBoost = 25;
+
+    /// <summary>
+    /// How much speed is boosted by based on the hardiness speed curve.
+    /// </summary>
+    [Range(0, 10)]
+    public float speedInfluenceChange = 5;
+
+    /// <summary>
+    /// The maximum amount of food when considering food survival chance calculations.
+    /// </summary>
+    [Range(1, 10)]
+    public int foodCapacity = 5;
+
+    [Header("Survival Curves")]
+    /// <summary>
+    /// The falloff curve representing the influence levels of food.
+    /// </summary>
+    public AnimationCurve foodCurve;
+
+    /// <summary>
+    /// The curve representing the relationship between hardiness and speed.
+    /// </summary>
+    public AnimationCurve hardinessSpeedCurve;
+
+    [Header("Enviornmental Survival Penalties")]
     /// <summary>
     /// The penalty to an agents survival if they are caught in the dark at the end of the day
     /// </summary>
@@ -90,10 +132,37 @@ public class SurvivalSimulationManager : MonoBehaviour
         List<GameObject> testingAgentList = new List<GameObject>();
         testingAgentList.Populate(temporaryAgent, temporaryAgentsPerArea);
 
+        // For now mutate and sleep simply from here.
+        foreach (GameObject agent in testingAgentList)
+        {
+            if(agent.TryGetComponent(out SurvivalAgent survivalist))
+            {
+                survivalist.MutateGenes(mutationRange);
+                survivalist.isAsleep = true;
+            }
+            else
+            {
+                Debug.LogWarning("No SurvivalAgent detected on agent GameObject!");
+            }
+        }
+
         // For now use just one prefab repeatedly.
         foreach (HomeActionPoint home in homeActionPoints)
         {
             activeAgents.AddRange(home.GenerateAgentsInArea(testingAgentList));
+        }
+
+        // Awaken all agents for the simulation.
+        foreach (GameObject agent in activeAgents)
+        {
+            if (agent.TryGetComponent(out SurvivalAgent survivalist))
+            {
+                survivalist.isAsleep = false;
+            }
+            else
+            {
+                Debug.LogWarning("No SurvivalAgent detected on agent GameObject!");
+            }
         }
     }
 

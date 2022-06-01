@@ -102,14 +102,14 @@ public static class ExtensionMethods
     }
 
     /// <summary>
-    /// Enum that represents quadrants.
+    /// A random system class for random number related equations.
     /// </summary>
-    public enum Quadrant 
-    {
-        Undefined = 0,
-        UpperRight,
-        UpperLeft,
-        LowerLeft,
-        LowerRight
-    }
+    private static System.Random randomClass = new System.Random();
+
+    /// <summary>
+    /// Returns if a given probablility is succesfull or not.
+    /// </summary>
+    /// <param name="probability">The probability of this equation.</param>
+    /// <returns>If the probability happens.</returns>
+    public static bool ProbabilityCheck(double probability) => randomClass.NextDouble() <= probability;
 }

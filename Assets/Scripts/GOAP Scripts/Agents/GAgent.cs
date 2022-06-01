@@ -30,7 +30,7 @@ public class GAgent : MonoBehaviour
     /// <summary>
     /// Although unused in this class, this should be used for action classes to fetch.
     /// </summary>
-    private NavMeshAgent navAgent;
+    protected NavMeshAgent navAgent;
 
     /// <summary>
     /// The planner that tracks actions.
