@@ -7,6 +7,11 @@ using UnityEngine;
 public class GPlanner
 {
     /// <summary>
+    /// Boolean to mark if debugging should happen.
+    /// </summary>
+    public bool shouldDebug = false;
+
+    /// <summary>
     /// Construct a plan of actions based on given parameters..
     /// </summary>
     /// <param name="actions">List of available actions that the agent can take.</param>
@@ -40,7 +45,7 @@ public class GPlanner
         // If not possible, fail.
         if (!success)
         {
-            Debug.Log("NO PLAN");
+            DebugLocal("NO PLAN");
             return null;
         }
         
@@ -90,10 +95,10 @@ public class GPlanner
         }
 
         // Debug the current plan that the NPC will take.
-        Debug.Log("The Plan is: ");
+        DebugLocal("The Plan is: ");
         foreach (GAction a in queue)
         {
-            Debug.Log("Q: " + a.actionName);
+            DebugLocal("Q: " + a.actionName);
         }
 
         return queue;
@@ -140,7 +145,7 @@ public class GPlanner
                     branches.Add(node);
                     foundActionPath = true;
 
-                    Debug.Log("Path was found");
+                    DebugLocal("Path was found");
                 }
                 // If no path was found, move onto the next node.
                 else
@@ -209,5 +214,17 @@ public class GPlanner
         }
         // Otherwise return true.
         return true;
+    }
+
+    /// <summary>
+    /// Debug a given string if debugging is enabled.
+    /// </summary>
+    /// <param name="givenString">The string to debug.</param>
+    private void DebugLocal(string givenString)
+    {
+        if(shouldDebug)
+        {
+            Debug.Log(givenString);
+        }
     }
 }
