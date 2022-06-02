@@ -43,6 +43,12 @@ public class SurvivalSimulationManager : MonoBehaviour
     [Range(1, 10)]
     public int foodCapacity = 5;
 
+    /// <summary>
+    /// Array for the data of all surviving agents in the last simulation cycle.
+    /// </summary>
+    [SerializeField]
+    private SurvivalGenes[] lastSurvivalAgents;
+
     [Header("Survival Curves")]
     /// <summary>
     /// The falloff curve representing the influence levels of food.

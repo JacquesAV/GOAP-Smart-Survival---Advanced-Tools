@@ -711,10 +711,14 @@ MonoBehaviour:
   returnHomePriority: 20
   foodCollectionPriority: 10
   baseSpeed: 2.5
-  agentHardinessOverSpeed: 0.5
+  genes:
+    agentHardinessOverSpeed: 0.5
+    agentGenerosity: 0.5
+  isDead: 1
+  isAsleep: 1
+  wasGenerous: 1
   statusText: {fileID: 5459764964317370391}
   survivalBar: {fileID: 802374187522421506}
-  isDead: 1
 --- !u!114 &3117043053806418979
 MonoBehaviour:
   m_ObjectHideFlags: 0

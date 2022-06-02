@@ -634,12 +634,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50076b2c502e1534d8ee2c599f3d0925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testest: 0
+  mutationRange: 0.15
   baseSurvivalChance: 50
   foodSurvivalBoost: 25
   hardinessSurvivalBoost: 25
   speedInfluenceChange: 5
   foodCapacity: 5
+  lastSurvivalAgents:
+  - agentHardinessOverSpeed: 0.5
+    agentGenerosity: 0.5
   foodCurve:
     serializedVersion: 2
     m_Curve:
