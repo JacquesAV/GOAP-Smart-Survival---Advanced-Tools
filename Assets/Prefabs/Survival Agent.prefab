@@ -706,17 +706,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actions: []
   inventory: {fileID: 0}
+  navAgent: {fileID: 5459764963503566486}
   currentAction: {fileID: 0}
   goalDistanceSentitivity: 1.5
-  returnHomePriority: 20
-  foodCollectionPriority: 10
+  shouldDebugPlanner: 0
+  returnHomePriority:
+    integer: 0
+    <Minimum>k__BackingField: 25
+    <Maximum>k__BackingField: 75
+  foodCollectionPriority: 50
   baseSpeed: 2.5
-  genes:
-    agentHardinessOverSpeed: 0.5
-    agentGenerosity: 0.5
-  isDead: 1
+  agentHardinessOverSpeed: 0.5
+  agentGenerosity: 0.5
   isAsleep: 1
-  wasGenerous: 1
+  wasGenerous: 0
+  isDead: 0
   statusText: {fileID: 5459764964317370391}
   survivalBar: {fileID: 802374187522421506}
 --- !u!114 &3117043053806418979
@@ -733,8 +737,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items: []
   <TotalFood>k__BackingField: 0
-  foodCapacity: 10
-  usingCapacity: 0
+  foodCapacity: 5
+  usingCapacity: 1
 --- !u!114 &6440048594512596469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -769,7 +773,9 @@ MonoBehaviour:
   antiConditions:
   - key: IsNight
     value: 0
-  preConditions: []
+  preConditions:
+  - key: FoodPointExists
+    value: 0
   afterEffects:
   - key: CollectedFood
     value: 0
@@ -796,9 +802,7 @@ MonoBehaviour:
   targetTag: HomePoint
   duration: 0
   antiConditions: []
-  preConditions:
-  - key: IsNight
-    value: 0
+  preConditions: []
   afterEffects:
   - key: ReturnedHome
     value: 0

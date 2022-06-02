@@ -634,7 +634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50076b2c502e1534d8ee2c599f3d0925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mutationRange: 0.15
+  mutationRange: 0.1
   baseSurvivalChance: 50
   foodSurvivalBoost: 25
   hardinessSurvivalBoost: 25
@@ -655,6 +655,15 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.5
+      inSlope: 1.3333334
+      outSlope: 1.3333334
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
@@ -716,7 +725,7 @@ MonoBehaviour:
   - {fileID: 832727620}
   - {fileID: 166541501}
   temporaryAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
-  temporaryAgentsPerArea: 2
+  temporaryAgentsPerArea: 1
 --- !u!4 &785447537 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
@@ -1198,7 +1207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodPrefab: {fileID: 825788034404475618, guid: 7b80da0c8c227e54d88dc2c4dd018b48, type: 3}
-  foodCount: 50
+  foodCount: 25
   dimensions: {x: 29, y: 29}
   foodList: []
 --- !u!1001 &1339165974

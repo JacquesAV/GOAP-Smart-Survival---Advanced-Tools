@@ -113,3 +113,40 @@ public static class ExtensionMethods
     /// <returns>If the probability happens.</returns>
     public static bool ProbabilityCheck(double probability) => randomClass.NextDouble() <= probability;
 }
+
+/// <summary>
+/// Struct that helps define an integer and its boundaries.
+/// </summary>
+[System.Serializable]
+public struct IntMinMax
+{
+    /// <summary>
+    /// The integer value to modify.
+    /// </summary>
+    public int integer;
+
+    /// <summary>
+    /// The minimum value for the integer.
+    /// </summary>
+    [field: SerializeField]
+    public int Minimum { get; private set; }
+
+    /// <summary>
+    /// The maximum value for the integer.
+    /// </summary>
+    [field: SerializeField]
+    public int Maximum { get; private set; }
+
+    /// <summary>
+    /// Constructor for quick creation of struct.
+    /// </summary>
+    /// <param name="integer">The integer value to modify.</param>
+    /// <param name="Minimum">The minimum value for the integer.</param>
+    /// <param name="Maximum">The maximum value for the integer.</param>
+    public IntMinMax(int integer, int Minimum, int Maximum)
+    {
+        this.integer = integer;
+        this.Minimum = Minimum;
+        this.Maximum = Maximum;
+    }
+}

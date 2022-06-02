@@ -82,17 +82,17 @@ public class ReturnHome : GAction
             Debug.LogWarning("No simulation manager found!");
         }
 
-        // Clear inventory of food.
-        gAgent.inventory.ClearFood();
-
         // Set the belief that the agent has returned home.
         agentBeliefs.SetState("ReturnedHome", 1);
 
+        // Clear inventory of food.
+        //gAgent.inventory.ClearFood();
+
         // Remove belief that the agent is at food capacity.
-        agentBeliefs.RemoveState("ReachedFoodCapacity");
+        //agentBeliefs.RemoveState("ReachedFoodCapacity");
 
         // Remove belief that the agent has food.
-        agentBeliefs.RemoveState("HasFood");
+        //agentBeliefs.RemoveState("HasFood");
 
         return true;
     }

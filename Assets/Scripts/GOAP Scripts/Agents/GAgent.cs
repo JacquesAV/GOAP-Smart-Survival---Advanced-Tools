@@ -25,11 +25,13 @@ public class GAgent : MonoBehaviour
     /// <summary>
     /// Agents internal states.
     /// </summary>
-    [HideInInspector] public GInventory inventory;
+    [HideInInspector]
+    public GInventory inventory;
 
     /// <summary>
     /// Although unused in this class, this should be used for action classes to fetch.
     /// </summary>
+    [SerializeField]
     protected NavMeshAgent navAgent;
 
     /// <summary>
@@ -76,6 +78,11 @@ public class GAgent : MonoBehaviour
     public bool HasPath => navAgent.hasPath;
 
     /// <summary>
+    /// If the agent should debug the planner.
+    /// </summary>
+    public bool shouldDebugPlanner = false;
+
+    /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
     public void Start()
@@ -88,9 +95,6 @@ public class GAgent : MonoBehaviour
         currentGoal = null;
         currentAction = null;
         planner = null;
-
-        // Get the navmesh agent from the attached agent.
-        navAgent = gameObject.GetComponent<NavMeshAgent>();
 
         // Disable forced rotation.
         navAgent.updateRotation = false;
@@ -179,7 +183,7 @@ public class GAgent : MonoBehaviour
         // If no plan or action queue exists, create one.
         if (planner == null || actionQueue == null)
         {
-            planner = new GPlanner();
+            planner = new GPlanner(shouldDebugPlanner);
 
             // Sort the goals by descending value.
             var sortedGoals = from entry in goals orderby entry.Value descending select entry;

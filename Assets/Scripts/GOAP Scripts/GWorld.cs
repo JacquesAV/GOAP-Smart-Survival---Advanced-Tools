@@ -54,6 +54,62 @@ public sealed class GWorld
     }
 
     /// <summary>
+    /// Helper method to add new food points for tracking.
+    /// </summary>
+    /// <param name="givenPoints">The food points being tracked.</param>
+    public void TrackFoodPoints(List<GameObject> givenPoints)
+    {
+        for (int i = foodPoints.Count - 1; i >= 0; i--)
+        {
+            if(foodPoints[i] == null)
+            {
+                foodPoints.RemoveAt(i);
+            }
+        }
+
+        foreach (var item in givenPoints)
+        {
+            if(!foodPoints.Contains(item))
+            {
+                foodPoints.Add(item);
+            }
+        }
+
+        if (foodPoints.Count > 0)
+        {
+            world.ModifyState("FoodPointExists", foodPoints.Count);
+        }
+    }
+
+    /// <summary>
+    /// Validates if a given world state that is tied to a list of gameobjects is still valid.
+    /// </summary>
+    /// <param name="checkedState">The state being checked.</param>
+    /// <param name="checkedList">The list being checked.</param>
+    public void ValidateWorldObjectState(string checkedState, List<GameObject> checkedList)
+    {
+        if (GWorld.Instance.GetWorld().HasState(checkedState))
+        {
+            bool hasAvailablePoint = false;
+            foreach (GameObject point in checkedList)
+            {
+                if (point.TryGetComponent(out ActionPoint action))
+                {
+                    if (action.CheckForSpace())
+                    {
+                        hasAvailablePoint = true;
+                    }
+                }
+            }
+
+            if (checkedList.Count <= 0 || !hasAvailablePoint)
+            {
+                GWorld.Instance.GetWorld().RemoveState(checkedState);
+            }
+        }
+    }
+
+    /// <summary>
     /// Remove food point from simulation.
     /// </summary>
     /// <param name="removedObject">The object to remove.</param>

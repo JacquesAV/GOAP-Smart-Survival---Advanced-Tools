@@ -76,6 +76,9 @@ public class FoodGenerator : MonoBehaviour
                 }
             }
         }
+
+        // Inform the world of the added food.
+        GWorld.Instance.TrackFoodPoints(foodList);
     }
 
     /// <summary>

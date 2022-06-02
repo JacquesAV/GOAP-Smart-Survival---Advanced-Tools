@@ -29,7 +29,7 @@ public class HomeActionPoint : ActionPoint
     /// <returns>The list of agents created so that they may externally be tracked.</returns>
     public List<GameObject> GenerateAgentsInArea(List<GameObject> agents)
     {
-        // Shuffle the list of agents.
+        // Shuffle the list of agents for unbiased placement.
         agents.Shuffle();
 
         // Queue of agents for easy iteration.

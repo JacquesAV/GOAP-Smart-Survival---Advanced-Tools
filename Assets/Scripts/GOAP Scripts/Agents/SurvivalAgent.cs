@@ -11,7 +11,7 @@ public class SurvivalAgent : GAgent
     /// <summary>
     /// Priority level of returning home task, higher the number the more important.
     /// </summary>
-    public int returnHomePriority = 20;
+    public IntMinMax returnHomePriority;
 
     /// <summary>
     /// Priority level of food collection task, higher the number the more important.
@@ -53,17 +53,17 @@ public class SurvivalAgent : GAgent
     /// <summary>
     /// Boolean to track if the agent is considered dead or alive.
     /// </summary>
-    public bool isDead = true;
-
-    /// <summary>
-    /// Boolean to track if the agent is considered dead or alive.
-    /// </summary>
     public bool isAsleep = true;
 
     /// <summary>
     /// Boolean to track if the agent had gifted food.
     /// </summary>
-    public bool wasGenerous = true;
+    public bool wasGenerous = false;
+
+    /// <summary>
+    /// Boolean to track if the agent is considered dead or alive.
+    /// </summary>
+    public bool isDead = false;
 
     /// <summary>
     /// The current survival chance that a given agent has.
@@ -82,9 +82,14 @@ public class SurvivalAgent : GAgent
     public Slider survivalBar = null;
 
     /// <summary>
-    /// Save the current survival simulation manager locally for ease of use.
+    /// The collection goal for the agent.
     /// </summary>
-    private readonly SurvivalSimulationManager SSM = SurvivalSimulationManager.SingletonManager;
+    private SubGoal collectionGoal;
+
+    /// <summary>
+    /// The return home goal for the agent.
+    /// </summary>
+    private SubGoal returnedGoal;
 
     /// <summary>
     /// Start is called before the first frame update.
@@ -98,14 +103,14 @@ public class SurvivalAgent : GAgent
         survivalChance = SurvivalSimulationManager.SingletonManager.baseSurvivalChance;
 
         // Set Maximum for survival bar.
-        if (survivalBar != null) { survivalBar.maxValue = survivalChance; }
+        if (survivalBar != null) { survivalBar.maxValue = 100; }
 
         // Create & add goals with priorities, set to false to keep goal after completion.
-        SubGoal collectionGoal = new SubGoal("CollectedFood", 1, false);
+        collectionGoal = new SubGoal("CollectedFood", 1, false);
         goals.Add(collectionGoal, foodCollectionPriority);
 
-        SubGoal returnedGoal = new SubGoal("ReturnedHome", 1, true);
-        goals.Add(returnedGoal, returnHomePriority);
+        returnedGoal = new SubGoal("ReturnedHome", 1, true);
+        goals.Add(returnedGoal, returnHomePriority.integer);
     }
 
     /// <summary>
@@ -116,10 +121,25 @@ public class SurvivalAgent : GAgent
         // Return early if agent is asleep.
         if (isAsleep) return;
 
+        // Update relevant priorities.
+        UpdateReturnHomePriority();
+
+        // Run relevant logic cycle.
         base.LateUpdate();
         UpdateStatusText();
         UpdateSurvivalChance();
         UpdateSurvivalChanceBar();
+    }
+
+    /// <summary>
+    /// Updates the home priority based on the time of day.
+    /// </summary>
+    private void UpdateReturnHomePriority()
+    {
+        if(goals.ContainsKey(returnedGoal))
+        {
+            goals[returnedGoal] = GWorld.Instance.GetWorld().HasState("IsNight") ? returnHomePriority.Maximum : returnHomePriority.Minimum;
+        }
     }
 
     /// <summary>
@@ -169,6 +189,9 @@ public class SurvivalAgent : GAgent
     /// <param name="mutationRange">The offset to apply to the genes.</param>
     public void MutateGenes(float mutationRange)
     {
+        // Temporary reference to the manager.
+        SurvivalSimulationManager SSM = SurvivalSimulationManager.SingletonManager;
+
         // Apply a ranged offset to the genes in a random direction.
         agentHardinessOverSpeed = Mathf.Clamp01(agentHardinessOverSpeed + Random.Range(-mutationRange, mutationRange));
         agentGenerosity = Mathf.Clamp01(agentGenerosity + Random.Range(-mutationRange, mutationRange));
@@ -183,9 +206,22 @@ public class SurvivalAgent : GAgent
     /// </summary>
     public void UpdateSurvivalChance()
     {
+        // Temporary reference to the manager.
+        SurvivalSimulationManager SSM = SurvivalSimulationManager.SingletonManager;
+
+        float penalties = 0;
+        if (!beliefs.HasState("HasFood"))
+        {
+            penalties -= SSM.hungerPenalty;
+        }
+        if (!beliefs.HasState("ReturnedHome") && GWorld.Instance.GetWorld().HasState("IsNight"))
+        {
+            penalties -= SSM.darknessPenalty;
+        }
+
         float foodChance = SSM.foodCurve.Evaluate((float)inventory.TotalFood / SSM.foodCapacity) * SSM.foodSurvivalBoost;
         float hardinessChance = SSM.hardinessSpeedCurve.Evaluate(agentHardinessOverSpeed) * SSM.hardinessSurvivalBoost;
-        survivalChance = SSM.baseSurvivalChance + foodChance + hardinessChance;
+        survivalChance = SSM.baseSurvivalChance + foodChance + hardinessChance + penalties;
     }
 
     /// <summary>

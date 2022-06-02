@@ -9,7 +9,13 @@ public class GPlanner
     /// <summary>
     /// Boolean to mark if debugging should happen.
     /// </summary>
-    public bool shouldDebug = false;
+    public bool shouldDebug = true;
+
+    /// <summary>
+    /// Constructor for quick creation of the class.
+    /// </summary>
+    /// <param name="shouldDebug">If the planner should debug or not.</param>
+    public GPlanner(bool shouldDebug) => this.shouldDebug = shouldDebug;
 
     /// <summary>
     /// Construct a plan of actions based on given parameters..

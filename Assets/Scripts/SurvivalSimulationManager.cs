@@ -40,7 +40,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// <summary>
     /// The maximum amount of food when considering food survival chance calculations.
     /// </summary>
-    [Range(1, 10)]
+    [Range(0, 10)]
     public int foodCapacity = 5;
 
     /// <summary>
@@ -173,10 +173,17 @@ public class SurvivalSimulationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Listen for keyboard input in temporary method for changing night state.
+    /// Track possible changes in the world and update.
     /// </summary>
     public void Update()
     {
+        // While food points are believed to exist, check if they do.
+        GWorld.Instance.ValidateWorldObjectState("FoodPointExists", GWorld.foodPoints);
+
+        // While home points are believed to exist, check if they do.
+        GWorld.Instance.ValidateWorldObjectState("ReturnedHome", GWorld.homePoints);
+
+        // Temporary check for inputs to toggle night.
         if (Input.GetKeyUp(KeyCode.KeypadEnter))
         {
             if (GWorld.Instance.GetWorld().HasState("IsNight"))
