@@ -107,14 +107,14 @@ public class SurvivalSimulationManager : MonoBehaviour
     private List<GameObject> activeAgents = new List<GameObject>();
 
     /// <summary>
-    /// Temporary agent prefab for testing.
+    /// The base template for survival agents.
     /// </summary>
-    public GameObject temporaryAgent;
+    public GameObject baseAgent;
 
     /// <summary>
-    /// Temporary int for agent spawning.
+    /// How big each generation should be.
     /// </summary>
-    public int temporaryAgentsPerArea;
+    public int generationSize;
 
     /// <summary>
     /// Debugs the amount of food gathered by the agent.
@@ -135,27 +135,41 @@ public class SurvivalSimulationManager : MonoBehaviour
         foodGenerator.GenerateFoodInArea();
 
         // Temporary new list for testing.
-        List<GameObject> testingAgentList = new List<GameObject>();
-        testingAgentList.Populate(temporaryAgent, temporaryAgentsPerArea);
+        List<GameObject> temporaryTestingAgentList = new List<GameObject>();
+        temporaryTestingAgentList.Populate(baseAgent, generationSize);
 
-        // For now mutate and sleep simply from here.
-        foreach (GameObject agent in testingAgentList)
+        // TODO - Poplate a list with agents
+        // HERE
+        // HERE
+        // Note: change how data is passed into the next simulation.
+
+        // Shuffle the list of agents for unbiased placement and create a queue for them.
+        temporaryTestingAgentList.Shuffle();
+        Queue<GameObject> queuedAgents = temporaryTestingAgentList.ConvertListToQueue();
+        List<GameObject>[] homePointAgents = new List<GameObject>[homeActionPoints.Count];
+
+        // While the queued agents is full, distribute the agents evenly across the home points.
+        while(queuedAgents.Count > 0)
         {
-            if(agent.TryGetComponent(out SurvivalAgent survivalist))
+            foreach(List<GameObject> agents in homePointAgents)
             {
-                survivalist.MutateGenes(mutationRange);
-                survivalist.isAsleep = true;
-            }
-            else
-            {
-                Debug.LogWarning("No SurvivalAgent detected on agent GameObject!");
+                if (queuedAgents.Count > 0)
+                {
+                    // Dequeue an agent into the list.
+                    agents.Add(queuedAgents.Dequeue());
+                }
+                else
+                {
+                    // Break the distribution early if empty.
+                    break;
+                }
             }
         }
 
-        // For now use just one prefab repeatedly.
-        foreach (HomeActionPoint home in homeActionPoints)
+        // Pass in the distributed list of agents.
+        for (int i = 0; i < homeActionPoints.Count; i++)
         {
-            activeAgents.AddRange(home.GenerateAgentsInArea(testingAgentList));
+            activeAgents.AddRange(homeActionPoints[i].GenerateAgentsInArea(homePointAgents[i]));
         }
 
         // Awaken all agents for the simulation.
@@ -163,6 +177,7 @@ public class SurvivalSimulationManager : MonoBehaviour
         {
             if (agent.TryGetComponent(out SurvivalAgent survivalist))
             {
+                survivalist.MutateGenes(mutationRange);
                 survivalist.isAsleep = false;
             }
             else

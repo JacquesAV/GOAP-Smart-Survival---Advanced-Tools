@@ -724,8 +724,8 @@ MonoBehaviour:
   - {fileID: 2045408613}
   - {fileID: 832727620}
   - {fileID: 166541501}
-  temporaryAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
-  temporaryAgentsPerArea: 1
+  baseAgent: {fileID: 0}
+  generationSize: 0
 --- !u!4 &785447537 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}

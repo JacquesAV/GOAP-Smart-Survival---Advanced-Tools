@@ -23,15 +23,12 @@ public class HomeActionPoint : ActionPoint
     public bool horizontalFlip;
 
     /// <summary>
-    /// Generate food points within the spawn region.
+    /// Generate given agents within the spawn region.
     /// </summary>
     /// <param name="agents">The agents to create in the area.</param>
     /// <returns>The list of agents created so that they may externally be tracked.</returns>
     public List<GameObject> GenerateAgentsInArea(List<GameObject> agents)
     {
-        // Shuffle the list of agents for unbiased placement.
-        agents.Shuffle();
-
         // Queue of agents for easy iteration.
         Queue<GameObject> agentsToSpawn = ExtensionMethods.ConvertListToQueue(agents);
 
@@ -60,7 +57,7 @@ public class HomeActionPoint : ActionPoint
                             GameObject currentAgent = agentsToSpawn.Dequeue();
 
                             // Instantiate and save the agent.
-                            GameObject agent = Instantiate(currentAgent, this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0), Quaternion.identity);
+                            GameObject agent = Instantiate(currentAgent, this.transform.position + new Vector3Int((-dimensions.x / 2) + x, (-dimensions.y / 2) + y, 0), Quaternion.identity); 
                             instantiatedAgents.Add(agent);
                         }
                     }
