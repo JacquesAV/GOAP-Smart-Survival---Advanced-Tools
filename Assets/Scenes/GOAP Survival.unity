@@ -641,8 +641,8 @@ MonoBehaviour:
   speedInfluenceChange: 5
   foodCapacity: 5
   lastSurvivalAgents:
-  - agentHardinessOverSpeed: 0.5
-    agentGenerosity: 0.5
+  - agentHardinessOverSpeed: 0
+    agentGenerosity: 0
   foodCurve:
     serializedVersion: 2
     m_Curve:
@@ -702,6 +702,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   darknessPenalty: 25
   hungerPenalty: 25
+  generousRepopulationRatio: 0.25
   foodGenerator: {fileID: 1299173444}
   homeActionPoints:
   - {fileID: 824706569}
@@ -724,8 +725,12 @@ MonoBehaviour:
   - {fileID: 2045408613}
   - {fileID: 832727620}
   - {fileID: 166541501}
-  baseAgent: {fileID: 0}
-  generationSize: 0
+  parentAgentPrefabs:
+  - {fileID: 5459764963503566473, guid: dac1bfcea0ee48c40a6cbe56633ef505, type: 3}
+  - {fileID: 5459764963503566473, guid: 48f1bf4c578d5aa4587edd9358b385bd, type: 3}
+  - {fileID: 5459764963503566473, guid: 36efad2aeda3b3945ae9396c6ddceea0, type: 3}
+  baseAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
+  generationSize: 15
 --- !u!4 &785447537 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}

@@ -72,10 +72,10 @@ public class ReturnHome : GAction
     /// <returns>If successfully post performed.</returns>
     public override bool PostPerform()
     {
-        // Inform the manager of the agents return, throwing a warning if one doesnt exist.
+        // Inform the manager of the agents return.
         if(SurvivalSimulationManager.SingletonManager)
         {
-            SurvivalSimulationManager.SingletonManager.DebugFood(gAgent.inventory.TotalFood);
+            SurvivalSimulationManager.SingletonManager.AgentReturnedHome(gAgent as SurvivalAgent);
         }
         else
         {
@@ -84,15 +84,6 @@ public class ReturnHome : GAction
 
         // Set the belief that the agent has returned home.
         agentBeliefs.SetState("ReturnedHome", 1);
-
-        // Clear inventory of food.
-        //gAgent.inventory.ClearFood();
-
-        // Remove belief that the agent is at food capacity.
-        //agentBeliefs.RemoveState("ReachedFoodCapacity");
-
-        // Remove belief that the agent has food.
-        //agentBeliefs.RemoveState("HasFood");
 
         return true;
     }

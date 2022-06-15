@@ -50,6 +50,11 @@ public class ActionPoint : MonoBehaviour
     public bool GlobalAllowance => globalReservation;
 
     /// <summary>
+    /// Clears the action point of reservations.
+    /// </summary>
+    public void UnreserveAllActionPoint() => occupyingAgents.Clear();
+
+    /// <summary>
     /// Allows for a given agent to reserve a spot in the action point.
     /// </summary>
     /// <param name="givenAgent">The agent attempting to reserve the point.</param>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -11,7 +12,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// The range at which an agents gene can mutate.
     /// </summary>
     [Range(0, 1)]
-    public float mutationRange = 0.15f;
+    public float mutationRange = 0.1f;
 
     /// <summary>
     /// The base chance for an agent to survive a given day.
@@ -78,6 +79,14 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// </summary>
     public static SurvivalSimulationManager SingletonManager { get; private set; }
 
+    [Header("Repopulation Settings")]
+    /// <summary>
+    /// The percentage of agent repopulation that is reserved exclusively for generous agents.
+    /// </summary>
+    [SerializeField]
+    [Range(0, 1)]
+    private float generousRepopulationRatio= 0.25f;
+
     /// <summary>
     /// Set the singleton to this instance.
     /// </summary>
@@ -97,9 +106,10 @@ public class SurvivalSimulationManager : MonoBehaviour
     private List<HomeActionPoint> homeActionPoints;
 
     /// <summary>
-    /// List of agent prefabs to be used in the simulation.
+    /// List of agent prefabs entered as parents to be used in the simulation.
     /// </summary>
-    private List<GameObject> agentPrefabs;
+    [SerializeField]
+    private List<GameObject> parentAgentPrefabs;
 
     /// <summary>
     /// List of active agents in the simulation.
@@ -114,19 +124,21 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// <summary>
     /// How big each generation should be.
     /// </summary>
+    [Range(1, 50)]
     public int generationSize;
-
-    /// <summary>
-    /// Debugs the amount of food gathered by the agent.
-    /// </summary>
-    /// <param name="foodCount">The amount of food delivered.</param>
-    public void DebugFood(int foodCount) => Debug.Log(string.Concat("Food: ", foodCount));
 
     /// <summary>
     /// Initialize core functionalities of the simulation.
     /// </summary>
     public void Start()
     {
+        // Return early and debug an error if there are more agents than the generation size.
+        if(parentAgentPrefabs.Count > generationSize)
+        {
+            Debug.LogError("Too many parent prefabs for the intended generation size!");
+            return;
+        }
+
         // Clear the current list of agents in case of carry over.
         activeAgents.Clear();
 
@@ -134,22 +146,21 @@ public class SurvivalSimulationManager : MonoBehaviour
         foodGenerator.RemoveFood();
         foodGenerator.GenerateFoodInArea();
 
-        // Temporary new list for testing.
-        List<GameObject> temporaryTestingAgentList = new List<GameObject>();
-        temporaryTestingAgentList.Populate(baseAgent, generationSize);
+        // List consisting of base agent prefabs ready for simulation instantiation.
+        List<GameObject> baseAgentList = new List<GameObject>();
+        baseAgentList.Populate(baseAgent, generationSize);
 
-        // TODO - Poplate a list with agents
-        // HERE
-        // HERE
-        // Note: change how data is passed into the next simulation.
+        // Create a queue for them.
+        Queue<GameObject> queuedAgents = baseAgentList.ConvertListToQueue();
 
-        // Shuffle the list of agents for unbiased placement and create a queue for them.
-        temporaryTestingAgentList.Shuffle();
-        Queue<GameObject> queuedAgents = temporaryTestingAgentList.ConvertListToQueue();
         List<GameObject>[] homePointAgents = new List<GameObject>[homeActionPoints.Count];
+        for (int i = 0; i < homePointAgents.Length; i++)
+        {
+            homePointAgents[i] = new List<GameObject>();
+        }
 
         // While the queued agents is full, distribute the agents evenly across the home points.
-        while(queuedAgents.Count > 0)
+        while (queuedAgents.Count > 0)
         {
             foreach(List<GameObject> agents in homePointAgents)
             {
@@ -172,11 +183,18 @@ public class SurvivalSimulationManager : MonoBehaviour
             activeAgents.AddRange(homeActionPoints[i].GenerateAgentsInArea(homePointAgents[i]));
         }
 
-        // Awaken all agents for the simulation.
+        // Using the previous surviving simulation agents, generate a gene pool based on their results.
+        List<SurvivalGenes> parentAgents = GenerateGenePool(parentAgentPrefabs.GetComponentFromList<SurvivalAgent>(), generationSize);
+        parentAgents.Shuffle();
+        Queue<SurvivalGenes> previousGenes = parentAgents.ConvertListToQueue();
+
+        // Awaken and initialize all agents for the simulation.
         foreach (GameObject agent in activeAgents)
         {
             if (agent.TryGetComponent(out SurvivalAgent survivalist))
             {
+                // Apply a parent gene and mutate the agent.
+                survivalist.SetBaseGenes(previousGenes.Dequeue());
                 survivalist.MutateGenes(mutationRange);
                 survivalist.isAsleep = false;
             }
@@ -212,5 +230,66 @@ public class SurvivalSimulationManager : MonoBehaviour
                 Debug.Log("Set to night");
             }
         }
+    }
+
+    /// <summary>
+    /// Disables agents that returned home in order to prevent collision issues or accidental overlaps.
+    /// </summary>
+    public void AgentReturnedHome(SurvivalAgent returnedAgent)
+    {
+        // Sleep the agent and disable its collisions.
+        returnedAgent.isAsleep = true;
+        returnedAgent.gameObject.GetComponent<CircleCollider2D>().enabled = false;
+    }
+
+    /// <summary>
+    /// Generates a list of survival genes based on a list of given parents and the intended size for the new gene pool
+    /// </summary>
+    /// <param name="parentAgents"></param>
+    /// <param name="generationCount"></param>
+    /// <returns>A list of survival genes.</returns>
+    private List<SurvivalGenes> GenerateGenePool(List<SurvivalAgent> parentAgents, int generationCount)
+    {
+        // Temporary list to hold survival genes generated from the pool of parents.
+        List<SurvivalGenes> genePool = new List<SurvivalGenes>();
+
+        // Return with default genes if no parents were given.
+        if (parentAgents.Count == 0)
+        {
+            Debug.Log("No parent agents provided, generating pool with default survival genes!");
+            genePool.Populate(new SurvivalGenes(), generationCount);
+            return genePool;
+        }
+
+        // Temporary list of parent agents that were generous.
+        List<SurvivalAgent> generousAgents = parentAgents.FindAll(x => x.wasGenerous);
+
+        // Add one guaranteed instance of the current parents to the gene pool.
+        genePool.AddRange(from item in parentAgents select item.CopiedGenes);
+
+        // Calculate how many additional agents need to be generated.
+        float outstandingAgents = generationCount - parentAgents.Count;
+
+        // Calculate how many additional agents are reserved for generous agents, if any agents were generous.
+        float generousReservations = outstandingAgents * (generousAgents.Count > 0 ? generousRepopulationRatio : 0);
+
+        // Appropriately reduce and round the resulting values.
+        outstandingAgents = Mathf.CeilToInt(outstandingAgents - generousReservations);
+        generousReservations = Mathf.FloorToInt(generousReservations);
+
+        // Add to the gene pool while space still remains.
+        while ((int)generousReservations > 0)
+        {
+            // Get a random gene from the parent agents and reduce the count.
+            genePool.Add(generousAgents.GetRandom().CopiedGenes);
+            generousReservations--;
+        }
+        while ((int)outstandingAgents > 0)
+        {
+            // Get a random gene from the parent agents and reduce the count.
+            genePool.Add(parentAgents.GetRandom().CopiedGenes);
+            outstandingAgents--;
+        }
+        return genePool;
     }
 }

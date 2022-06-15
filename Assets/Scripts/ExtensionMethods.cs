@@ -53,6 +53,34 @@ public static class ExtensionMethods
     }
 
     /// <summary>
+    /// Gets a list of a type of component from a list of gameobjects.
+    /// </summary>
+    /// <typeparam name="T">Generic type for the list content.</typeparam>
+    /// <param name="givenList">The list being converted.</param>
+    /// <returns>The list of gotten components.</returns>
+    public static List<T> GetComponentFromList<T>(this IList<GameObject> givenList)
+    {
+        // Declare a new list of the component type.
+        List<T> componentList = new List<T>();
+
+        // Iterate over each item in the list and save the component.
+        foreach (GameObject item in givenList)
+        {
+            if (item.TryGetComponent(out T component))
+            {
+                componentList.Add(component);
+            }
+            else
+            {
+                Debug.LogError(string.Concat("Tried and failed to get component from object: ", item.name));
+            }
+        }
+
+        // Return the list of same type components.
+        return componentList;
+    }
+
+    /// <summary>
     /// Shuffles the element order of the specified list.
     /// Smooth Foundations Method.
     /// </summary>
@@ -79,7 +107,7 @@ public static class ExtensionMethods
     /// <param name="givenList">The list being iterated over.</param>
     /// <param name="givenValue">The default value for the list.</param>
     /// <param name="givenCount">The amount to populate the list with.</param>
-    public static void Populate<T>(this List<T> givenList, T givenValue, int givenCount)
+    public static void Populate<T>(this IList<T> givenList, T givenValue, int givenCount)
     {
         for (int i = 0; i < givenCount; i++)
         {
@@ -100,6 +128,14 @@ public static class ExtensionMethods
             givenArray[i] = givenValue;
         }
     }
+
+    /// <summary>
+    /// Returns a random element from the list.
+    /// </summary>
+    /// <typeparam name="T">The type of element in the list.</typeparam>
+    /// <param name="givenList">The list being fetched from.</param>
+    /// <returns>A random element from the list.</returns>
+    public static T GetRandom<T>(this IList<T> givenList) => givenList[UnityEngine.Random.Range(0, givenList.Count)];
 
     /// <summary>
     /// A random system class for random number related equations.

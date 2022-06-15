@@ -46,7 +46,6 @@ public class SurvivalAgent : GAgent
     /// <summary>
     /// Returns a copy of the the survival genes.
     /// </summary>
-    /// <returns></returns>
     public SurvivalGenes CopiedGenes => new SurvivalGenes(agentHardinessOverSpeed, agentGenerosity);
 
     [Header("Miscellaneous")]
@@ -177,7 +176,7 @@ public class SurvivalAgent : GAgent
     /// Copies the genes from a given struct.
     /// </summary>
     /// <param name="givenGenes">The genes being copied over.</param>
-    public void InstantiateGenes(SurvivalGenes givenGenes)
+    public void SetBaseGenes(SurvivalGenes givenGenes)
     {
         agentHardinessOverSpeed = givenGenes.agentHardinessOverSpeed;
         agentGenerosity = givenGenes.agentGenerosity;
@@ -197,7 +196,7 @@ public class SurvivalAgent : GAgent
         agentGenerosity = Mathf.Clamp01(agentGenerosity + Random.Range(-mutationRange, mutationRange));
 
         // Set the final speed.
-        finalSpeed = Mathf.Abs(SSM.hardinessSpeedCurve.Evaluate(agentHardinessOverSpeed) - 1) * SSM.speedInfluenceChange;
+        finalSpeed = baseSpeed + Mathf.Abs(SSM.hardinessSpeedCurve.Evaluate(agentHardinessOverSpeed) - 1) * SSM.speedInfluenceChange;
         navAgent.speed = finalSpeed;
     }
 
