@@ -30,7 +30,7 @@ public class HomeActionPoint : ActionPoint
     public List<GameObject> GenerateAgentsInArea(List<GameObject> agents)
     {
         // Queue of agents for easy iteration.
-        Queue<GameObject> agentsToSpawn = ExtensionMethods.ConvertListToQueue(agents);
+        Queue<GameObject> agentsToSpawn = ExtensionMethods.ToQueue(agents);
 
         // List of instantiated agents.
         List<GameObject> instantiatedAgents = new List<GameObject>();

@@ -224,13 +224,26 @@ public class SurvivalAgent : GAgent
     }
 
     /// <summary>
-    /// Rolls to check if the agent has died based on their survival chance
+    /// Rolls to check if the agent has died based on their survival chance.
     /// </summary>
-    /// <returns>If the agent has died.</returns>
-    public bool RollForIsDead()
-    {
-        bool temporaryIsDead = ExtensionMethods.ProbabilityCheck(survivalChance / 100);
-        isDead = temporaryIsDead;
-        return temporaryIsDead;
-    }
+    /// <returns>If the agent should survive.</returns>
+    public bool RollForSurvival() => ExtensionMethods.ProbabilityCheck(survivalChance / 100);
+
+    /// <summary>
+    /// Rolls to check if the agent has died based on their survival chance.
+    /// </summary>
+    /// <returns>If the agent will share.</returns>
+    public bool RollForGenerosity() => ExtensionMethods.ProbabilityCheck(agentGenerosity);
+
+    /// <summary>
+    /// Checks if the agent can be generous, defined by if they have more than one piece of food.
+    /// </summary>
+    /// <returns>If the agent can share.</returns>
+    public bool CanBeGenerous() => inventory.TotalFood > 1;
+
+    /// <summary>
+    /// Checks if the agent is starving with no food.
+    /// </summary>
+    /// <returns>If the agent has no food.</returns>
+    public bool IsStarving() => inventory.TotalFood == 0;
 }

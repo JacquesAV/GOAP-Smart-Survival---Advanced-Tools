@@ -1,13 +1,16 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// The main manager for the simulation, intended to manage most simulation features.
 /// </summary>
 public class SurvivalSimulationManager : MonoBehaviour
 {
-    [Header("Survival Settings")]
+    [Header("Survivor Settings")]
     /// <summary>
     /// The range at which an agents gene can mutate.
     /// </summary>
@@ -43,12 +46,6 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// </summary>
     [Range(0, 10)]
     public int foodCapacity = 5;
-
-    /// <summary>
-    /// Array for the data of all surviving agents in the last simulation cycle.
-    /// </summary>
-    [SerializeField]
-    private SurvivalGenes[] lastSurvivalAgents;
 
     [Header("Survival Curves")]
     /// <summary>
@@ -94,6 +91,12 @@ public class SurvivalSimulationManager : MonoBehaviour
 
     [Header("Simulation Components")]
     /// <summary>
+    /// Stopwatch for the current simulation.
+    /// </summary>
+    [SerializeField]
+    private CustomTimer simulationTimer;
+
+    /// <summary>
     /// The generator object for food in the simulation.
     /// </summary>
     [SerializeField]
@@ -127,23 +130,205 @@ public class SurvivalSimulationManager : MonoBehaviour
     [Range(1, 50)]
     public int generationSize;
 
+    [Header("Practical Simulation Data")]
     /// <summary>
-    /// Initialize core functionalities of the simulation.
+    /// The name and path of the current simulation, important in folder sorting.
     /// </summary>
-    public void Start()
+    [SerializeField]
+    private string simulationPathName;
+
+    /// <summary>
+    /// The number of the current generation being simulated.
+    /// </summary>
+    [SerializeField]
+    [Range(1, 500)]
+    private int generationNumber = 0;
+
+    /// <summary>
+    /// The maximum number before the simulation should automatically stop.
+    /// </summary>
+    [SerializeField]
+    private int generationLimit = 100;
+
+    [Header("Technical Simulation Data")]
+    /// <summary>
+    /// Track if the simulation is currently running or not
+    /// </summary>
+    [SerializeField]
+    private bool simulationRunning = false;
+
+    /// <summary>
+    /// Declares how long each generation should run for.
+    /// </summary>
+    [SerializeField]
+    private float simulationDuration = 25;
+
+    /// <summary>
+    /// Declares how much unity must speed up the simulation.
+    /// </summary>
+    [SerializeField]
+    [Range(1, 10)]
+    private float simulationTimeScale = 1;
+
+    /// <summary>
+    /// The ratio for how much of the simulation is considered daytime.
+    /// </summary>
+    [SerializeField]
+    [Range(0, 1)]
+    private float dayRatio = 0.5f;
+
+    /// <summary>
+    /// The path for the simulations generations.
+    /// </summary>
+    private string primaryGenerationPath;
+
+    /// <summary>
+    /// The path for the surviving agents.
+    /// </summary>
+    private string primarySurvivedPath;
+
+    /// <summary>
+    /// The path for the dead agents.
+    /// </summary>
+    private string primaryDiedPath;
+
+    /// <summary>
+    /// Track possible changes in the world and update.
+    /// </summary>
+    public void Update()
     {
-        // Return early and debug an error if there are more agents than the generation size.
-        if(parentAgentPrefabs.Count > generationSize)
-        {
-            Debug.LogError("Too many parent prefabs for the intended generation size!");
+        // Return early if simulation is not running.
+        if (!simulationRunning)
             return;
+
+        // Ensure that the world is set as intended.
+        ValidateWorldElements();
+
+        // Temporary check for inputs to toggle night.
+        if (Input.GetKeyUp(KeyCode.KeypadEnter))
+        {
+            if (GWorld.Instance.GetWorld().HasState("IsNight"))
+            {
+                GWorld.Instance.GetWorld().RemoveState("IsNight");
+                Debug.Log("Set to day");
+            }
+            else
+            {
+                GWorld.Instance.GetWorld().SetState("IsNight", 1);
+                Debug.Log("Set to night");
+            }
+        }
+
+        // Temporary inputs to simulate certain points in the simulation.
+        if (Input.GetKeyUp(KeyCode.F))
+        {
+            GenerosityFoodShareRoll();
+            Debug.Log("Food Roll");
+        }
+
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            SurvivalCheckAndSaving();
+            Debug.Log("Survive Save Roll");
+        }
+
+        if (Input.GetKeyUp(KeyCode.N))
+        {
+            NextGeneration();
+            Debug.Log("Next roll");
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            StartSimulation();
+            Debug.Log("Start");
+        }
+    }
+
+    /// <summary>
+    /// Ensures that certain essential world elements are being correctly tracked.
+    /// </summary>
+    private void ValidateWorldElements()
+    {
+        // While food points are believed to exist, check if they do.
+        GWorld.Instance.ValidateWorldObjectState("FoodPointExists", GWorld.foodPoints);
+
+        // While home points are believed to exist, check if they do.
+        GWorld.Instance.ValidateWorldObjectState("ReturnedHome", GWorld.homePoints);
+    }
+
+    /// <summary>
+    /// End the simulation before the next generation.
+    /// </summary>
+    public void StopSimulation() => simulationRunning = false;
+
+    /// <summary>
+    /// Start the simulation for the next generation.
+    /// </summary>
+    public void StartSimulation()
+    {
+        // Begin main simulation settings.
+        simulationRunning = true;
+        simulationTimer.StartTimer(simulationDuration);
+
+        // Build the asset path.
+        BuildDirectoryPaths();
+
+        // Start the first generation.
+        RunNewGeneration();
+    }
+
+    /// <summary>
+    /// Runs a generation of the survival simulation, increasing the current generation number.
+    /// </summary>
+    private void NextGeneration()
+    {
+        simulationTimer.StartTimer(simulationDuration);
+        generationNumber++;
+        BuildDirectoryPaths();
+        RunNewGeneration();
+    }
+
+    /// <summary>
+    /// Cleans the simulation of potentially older content.
+    /// </summary>
+    private void CleanSimulation()
+    {
+        // Destroys old agents from previous simulation.
+        for (int i = activeAgents.Count - 1; i >= 0; i--)
+        {
+            Destroy(activeAgents[i]);
         }
 
         // Clear the current list of agents in case of carry over.
         activeAgents.Clear();
 
-        // Generate food for the simulation.
+        // Destroy old food that should not exist in the current run.
         foodGenerator.RemoveFood();
+
+        // Unreserve home points of old agents.
+        foreach (HomeActionPoint item in homeActionPoints)
+        {
+            item.UnreserveAllActionPoint();
+        }
+    }
+
+    /// <summary>
+    /// Runs a generation of the survival simulation.
+    /// </summary>
+    private void RunNewGeneration()
+    {
+        // Clean the simulation of old carry over data.
+        CleanSimulation();
+
+        // Return early and debug an error if there are more agents than the generation size.
+        if (parentAgentPrefabs.Count > generationSize)
+        {
+            Debug.LogError("Too many parent prefabs for the intended generation size!");
+            return;
+        }
+
+        // Generate food for the simulation.
         foodGenerator.GenerateFoodInArea();
 
         // List consisting of base agent prefabs ready for simulation instantiation.
@@ -151,8 +336,9 @@ public class SurvivalSimulationManager : MonoBehaviour
         baseAgentList.Populate(baseAgent, generationSize);
 
         // Create a queue for them.
-        Queue<GameObject> queuedAgents = baseAgentList.ConvertListToQueue();
+        Queue<GameObject> queuedAgents = baseAgentList.ToQueue();
 
+        // Creates an array of a list of objects that will be assosiated with a homepoint.
         List<GameObject>[] homePointAgents = new List<GameObject>[homeActionPoints.Count];
         for (int i = 0; i < homePointAgents.Length; i++)
         {
@@ -162,7 +348,7 @@ public class SurvivalSimulationManager : MonoBehaviour
         // While the queued agents is full, distribute the agents evenly across the home points.
         while (queuedAgents.Count > 0)
         {
-            foreach(List<GameObject> agents in homePointAgents)
+            foreach (List<GameObject> agents in homePointAgents)
             {
                 if (queuedAgents.Count > 0)
                 {
@@ -186,7 +372,7 @@ public class SurvivalSimulationManager : MonoBehaviour
         // Using the previous surviving simulation agents, generate a gene pool based on their results.
         List<SurvivalGenes> parentAgents = GenerateGenePool(parentAgentPrefabs.GetComponentFromList<SurvivalAgent>(), generationSize);
         parentAgents.Shuffle();
-        Queue<SurvivalGenes> previousGenes = parentAgents.ConvertListToQueue();
+        Queue<SurvivalGenes> previousGenes = parentAgents.ToQueue();
 
         // Awaken and initialize all agents for the simulation.
         foreach (GameObject agent in activeAgents)
@@ -206,29 +392,106 @@ public class SurvivalSimulationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Track possible changes in the world and update.
+    /// Runs logic cycle for an agent to share food with a starving agent.
     /// </summary>
-    public void Update()
+    private void GenerosityFoodShareRoll()
     {
-        // While food points are believed to exist, check if they do.
-        GWorld.Instance.ValidateWorldObjectState("FoodPointExists", GWorld.foodPoints);
-
-        // While home points are believed to exist, check if they do.
-        GWorld.Instance.ValidateWorldObjectState("ReturnedHome", GWorld.homePoints);
-
-        // Temporary check for inputs to toggle night.
-        if (Input.GetKeyUp(KeyCode.KeypadEnter))
+        // Temporary list for agents that are starving and will be willing to share.
+        List<SurvivalAgent> starvingAgents = new List<SurvivalAgent>();
+        List<SurvivalAgent> generousAgents = new List<SurvivalAgent>();
+        foreach (GameObject agent in activeAgents)
         {
-            if (GWorld.Instance.GetWorld().HasState("IsNight"))
+            if (agent.TryGetComponent(out SurvivalAgent survivalist))
             {
-                GWorld.Instance.GetWorld().RemoveState("IsNight");
-                Debug.Log("Set to day");
+                // If starving, add to the starving agents list.
+                if (survivalist.IsStarving())
+                {
+                    starvingAgents.Add(survivalist);
+                }
+                // Otherwise check if they are able and willing to share food.
+                else if (survivalist.CanBeGenerous() && survivalist.RollForGenerosity())
+                {
+                    generousAgents.Add(survivalist);
+                }
             }
             else
             {
-                GWorld.Instance.GetWorld().SetState("IsNight", 1);
-                Debug.Log("Set to night");
+                Debug.LogWarning("No SurvivalAgent detected on agent GameObject!");
             }
+        }
+
+        // Shuffle both lists for non-biased distribution.
+        starvingAgents.Shuffle();
+        generousAgents.Shuffle();
+
+        // Convert the generous agents into a queue for ease of usage.
+        Queue<SurvivalAgent> generousAgentsQueue = generousAgents.ToQueue();
+
+        // Allow each generous agent to gift one piece of food to a starving agent (if any).
+        foreach (SurvivalAgent agent in starvingAgents)
+        {
+            // If a generous agent remains, make an exhchange.
+            if (generousAgentsQueue.Count > 0)
+            {
+                // Exchange food between the agents.
+                SurvivalAgent gifter = generousAgentsQueue.Dequeue();
+                gifter.wasGenerous = true;
+                gifter.inventory.UnsafeRemoveFood(1);
+                agent.inventory.AddFood(1);
+                agent.beliefs.ModifyState("HasFood", 1);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Runs logic cycle for if an agent survives or dies and saves the relevant prefabs.
+    /// </summary>
+    private void SurvivalCheckAndSaving()
+    {
+        // Temporary list for agents that would survive.
+        List<GameObject> survivingPrefabs = new List<GameObject>();
+        int survivorCount = 0;
+        int deceasedCount = 0;
+        foreach (GameObject agent in activeAgents)
+        {
+            if (agent.TryGetComponent(out SurvivalAgent survivalist))
+            {
+                // Recalculate survival chances in case they are not updated.
+                survivalist.UpdateSurvivalChance();
+
+                // Save appropriately based on survival roll.
+                if(survivalist.RollForSurvival())
+                {
+                    survivorCount++;
+                    survivalist.isDead = false;
+                    survivingPrefabs.Add(PrefabUtility.SaveAsPrefabAsset(agent, string.Concat(primarySurvivedPath, "/Survivor", survivorCount, ".prefab")));
+                }
+                else
+                {
+                    deceasedCount++;
+                    survivalist.isDead = true;
+                    PrefabUtility.SaveAsPrefabAsset(agent, string.Concat(primaryDiedPath, "/Deceased", deceasedCount, ".prefab"));
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No SurvivalAgent detected on agent GameObject!");
+            }
+        }
+
+        // Stop the simulation if no agents survived.
+        if(survivingPrefabs.Count == 0)
+        {
+            simulationRunning = false;
+            simulationTimer.StopTimer();
+            
+            #if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+            #endif
+        }
+        else
+        {
+            parentAgentPrefabs = survivingPrefabs;
         }
     }
 
@@ -291,5 +554,36 @@ public class SurvivalSimulationManager : MonoBehaviour
             outstandingAgents--;
         }
         return genePool;
+    }
+
+    /// <summary>
+    /// Builds folder paths specific to the current generation.
+    /// </summary>
+    private void BuildDirectoryPaths()
+    {
+        primaryGenerationPath = Path.Combine("Assets", simulationPathName, "Gen-" + generationNumber);
+        BuildDirectoryPath(primaryGenerationPath);
+
+        primarySurvivedPath = Path.Combine(primaryGenerationPath, "Survived");
+        BuildDirectoryPath(primarySurvivedPath);
+
+        primaryDiedPath = Path.Combine(primaryGenerationPath, "Died");
+        BuildDirectoryPath(primaryDiedPath);
+    }
+
+    /// <summary>
+    /// Builds a given path in the directory.
+    /// </summary>
+    /// <param name="assetPath">The given path to create the directory at.</param>
+    private void BuildDirectoryPath(string assetPath)
+    {
+        if (Directory.Exists(assetPath))
+        {
+            Debug.Log(string.Concat("Path already exists: ", assetPath));
+            return;
+        }
+
+        Directory.CreateDirectory(assetPath);
+        AssetDatabase.Refresh();
     }
 }

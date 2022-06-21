@@ -122,6 +122,12 @@ public class GInventory : MonoBehaviour
     }
 
     /// <summary>
+    /// Remove food from the inventory.
+    /// Considered unsafe as it does not account for negative results.
+    /// </summary>
+    public void UnsafeRemoveFood(int amount) => TotalFood -= amount;
+
+    /// <summary>
     /// Clear the inventory of food being tracked.
     /// </summary>
     public void ClearFood() => TotalFood = 0;

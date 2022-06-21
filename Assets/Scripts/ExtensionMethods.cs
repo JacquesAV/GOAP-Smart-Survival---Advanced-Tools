@@ -28,23 +28,10 @@ public static class ExtensionMethods
     /// <summary>
     /// Convert a given list into a queue.
     /// </summary>
-    /// <param name="givenList">The list being converted.</param>
-    /// <returns>The converted list to queue.</returns>
-    public static Queue<Object> ConvertListToQueue(List<Object> givenList)
-    {
-        // Declare a new queue and add to it.
-        var newQueue = new Queue<Object>();
-        for (int i = 0; i < givenList.Count; i++) newQueue.Enqueue(givenList[i]);
-        return newQueue;
-    }
-
-    /// <summary>
-    /// Convert a given list into a queue.
-    /// </summary>
     /// <typeparam name="T">Generid type for the list content.</typeparam>
     /// <param name="givenList">The list being converted.</param>
     /// <returns>The converted list to queue.</returns>
-    public static Queue<T> ConvertListToQueue<T>(this IList<T> givenList)
+    public static Queue<T> ToQueue<T>(this IList<T> givenList)
     {
         // Declare a new queue and add to it.
         var newQueue = new Queue<T>();
