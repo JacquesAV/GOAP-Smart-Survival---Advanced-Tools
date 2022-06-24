@@ -72,7 +72,8 @@ public class SurvivalAgent : GAgent
     /// <summary>
     /// The current survival chance that a given agent has.
     /// </summary>
-    private float survivalChance;
+    [field: SerializeField]
+    public float SurvivalChance { get; private set; }
 
     [Header("UI")]
     /// <summary>
@@ -104,7 +105,7 @@ public class SurvivalAgent : GAgent
         base.Start();
 
         // Set starting survival chance.
-        survivalChance = SurvivalSimulationManager.SingletonManager.baseSurvivalChance;
+        SurvivalChance = SurvivalSimulationManager.SingletonManager.baseSurvivalChance;
 
         // Set Maximum for survival bar.
         if (survivalBar != null) { survivalBar.maxValue = 100; }
@@ -173,7 +174,7 @@ public class SurvivalAgent : GAgent
         if (survivalBar != null)
         {
             // Update survival chance level.
-            survivalBar.value = survivalChance;
+            survivalBar.value = SurvivalChance;
         }
     }
 
@@ -233,14 +234,14 @@ public class SurvivalAgent : GAgent
         float hardinessChance = SSM.hardinessSpeedCurve.Evaluate(agentHardinessOverSpeed) * SSM.hardinessSurvivalBoost;
 
         // Apply new survival chance values.
-        survivalChance = SSM.baseSurvivalChance + foodChance + hardinessChance + penalties;
+        SurvivalChance = SSM.baseSurvivalChance + foodChance + hardinessChance + penalties;
     }
 
     /// <summary>
     /// Rolls to check if the agent has died based on their survival chance.
     /// </summary>
     /// <returns>If the agent should survive.</returns>
-    public bool RollForSurvival() => ExtensionMethods.ProbabilityCheck(survivalChance / 100);
+    public bool RollForSurvival() => ExtensionMethods.ProbabilityCheck(SurvivalChance / 100);
 
     /// <summary>
     /// Rolls to check if the agent has died based on their survival chance.
