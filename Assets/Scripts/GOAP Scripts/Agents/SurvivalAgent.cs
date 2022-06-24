@@ -213,18 +213,26 @@ public class SurvivalAgent : GAgent
         // Temporary reference to the manager.
         SurvivalSimulationManager SSM = SurvivalSimulationManager.SingletonManager;
 
+        // Temporary penalties declaration to apply to agent.
         float penalties = 0;
+
+        // If starving, apply a hunger penalty.
         if (!beliefs.HasState("HasFood"))
         {
             penalties -= SSM.hungerPenalty;
         }
+
+        // If homeless, apply a hunger penalty.
         if (!beliefs.HasState("ReturnedHome") && GWorld.Instance.GetWorld().HasState("IsNight"))
         {
-            penalties -= SSM.darknessPenalty;
+            penalties -= SSM.homelessPenalty;
         }
 
+        // Calculate survival chances.
         float foodChance = SSM.foodCurve.Evaluate((float)inventory.TotalFood / SSM.foodCapacity) * SSM.foodSurvivalBoost;
         float hardinessChance = SSM.hardinessSpeedCurve.Evaluate(agentHardinessOverSpeed) * SSM.hardinessSurvivalBoost;
+
+        // Apply new survival chance values.
         survivalChance = SSM.baseSurvivalChance + foodChance + hardinessChance + penalties;
     }
 

@@ -60,10 +60,10 @@ public class SurvivalSimulationManager : MonoBehaviour
 
     [Header("Enviornmental Survival Penalties")]
     /// <summary>
-    /// The penalty to an agents survival if they are caught in the dark at the end of the day
+    /// The penalty to an agents survival if they are caught at the end of the day without reaching a home point.
     /// </summary>
     [Range(0, 100)]
-    public float darknessPenalty = 25;
+    public float homelessPenalty = 25;
 
     /// <summary>
     /// The penalty to an agents survival if they are caught hungry at the end of the day.
