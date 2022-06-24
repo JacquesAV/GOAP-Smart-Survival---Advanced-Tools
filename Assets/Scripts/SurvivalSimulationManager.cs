@@ -161,7 +161,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// Declares how long each generation should run for.
     /// </summary>
     [SerializeField]
-    private float simulationDuration = 25;
+    private float simulationDuration = 20;
 
     /// <summary>
     /// Declares how much unity must speed up the simulation.
@@ -193,9 +193,14 @@ public class SurvivalSimulationManager : MonoBehaviour
     private string primaryDiedPath;
 
     /// <summary>
+    /// Begin the simulation at the start of play.
+    /// </summary>
+    private void Start() => StartSimulation();
+
+    /// <summary>
     /// Track possible changes in the world and update.
     /// </summary>
-    public void Update()
+    private void Update()
     {
         // Return early if simulation is not running.
         if (!simulationRunning)
@@ -204,44 +209,24 @@ public class SurvivalSimulationManager : MonoBehaviour
         // Ensure that the world is set as intended.
         ValidateWorldElements();
 
-        // Temporary check for inputs to toggle night.
-        if (Input.GetKeyUp(KeyCode.KeypadEnter))
+        // Run the end of simulation if the timer runs out.
+        if(!simulationTimer.TimerIsRunning)
         {
-            if (GWorld.Instance.GetWorld().HasState("IsNight"))
-            {
-                GWorld.Instance.GetWorld().RemoveState("IsNight");
-                Debug.Log("Set to day");
-            }
-            else
-            {
-                GWorld.Instance.GetWorld().SetState("IsNight", 1);
-                Debug.Log("Set to night");
-            }
-        }
-
-        // Temporary inputs to simulate certain points in the simulation.
-        if (Input.GetKeyUp(KeyCode.F))
-        {
+            // Share food if applicable.
             GenerosityFoodShareRoll();
-            Debug.Log("Food Roll");
-        }
 
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-            SurvivalCheckAndSaving();
-            Debug.Log("Survive Save Roll");
-        }
+            // Roll for agents survival and save them accordingly.
+            bool hasSurvivors = SurvivalCheckAndSaving();
 
-        if (Input.GetKeyUp(KeyCode.N))
-        {
+            // Check if the simulation should stop and return early if so.
+            if(SimulationStopCheck() || !hasSurvivors)
+            {
+                StopSimulation();
+                return;
+            }
+
+            // Run the next generation with new data.
             NextGeneration();
-            Debug.Log("Next roll");
-        }
-
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            StartSimulation();
-            Debug.Log("Start");
         }
     }
 
@@ -250,6 +235,19 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// </summary>
     private void ValidateWorldElements()
     {
+        // Change if the world is considered to be night based on the current time.
+        if (simulationTimer.TimeRemaining <= (simulationDuration * (1 - dayRatio)))
+        {
+            GWorld.Instance.GetWorld().SetState("IsNight", 1);
+        }
+        else
+        {
+            GWorld.Instance.GetWorld().RemoveState("IsNight");
+        }
+
+        // Clean the world of null references.
+        GWorld.Instance.RemoveNullReferences();
+
         // While food points are believed to exist, check if they do.
         GWorld.Instance.ValidateWorldObjectState("FoodPointExists", GWorld.foodPoints);
 
@@ -258,21 +256,40 @@ public class SurvivalSimulationManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Checks if the simulation should stop based on specific conditions.
+    /// </summary>
+    private bool SimulationStopCheck() => (generationNumber >= generationLimit) ? true : false;
+
+    /// <summary>
     /// End the simulation before the next generation.
     /// </summary>
-    public void StopSimulation() => simulationRunning = false;
+    public void StopSimulation()
+    {
+        simulationRunning = false;
+        simulationTimer.StopTimer();
+        
+        #if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+        #endif
+    }
 
     /// <summary>
     /// Start the simulation for the next generation.
     /// </summary>
     public void StartSimulation()
     {
+        // Set the timescale for the simulation.
+        Time.timeScale = simulationTimeScale;
+
         // Begin main simulation settings.
         simulationRunning = true;
         simulationTimer.StartTimer(simulationDuration);
 
         // Build the asset path.
         BuildDirectoryPaths();
+
+        // Clean the simulation of possibly older data.
+        CleanSimulation();
 
         // Start the first generation.
         RunNewGeneration();
@@ -283,10 +300,8 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// </summary>
     private void NextGeneration()
     {
-        simulationTimer.StartTimer(simulationDuration);
         generationNumber++;
-        BuildDirectoryPaths();
-        RunNewGeneration();
+        StartSimulation();
     }
 
     /// <summary>
@@ -304,13 +319,13 @@ public class SurvivalSimulationManager : MonoBehaviour
         activeAgents.Clear();
 
         // Destroy old food that should not exist in the current run.
-        foodGenerator.RemoveFood();
+        foodGenerator.RemoveFoodGlobal();
 
         // Unreserve home points of old agents.
-        foreach (HomeActionPoint item in homeActionPoints)
-        {
-            item.UnreserveAllActionPoint();
-        }
+        homeActionPoints.ForEach(x => x.UnreserveAllActionPoint());
+
+        // Reset the world of its data.
+        GWorld.Instance.ResetWorld();
     }
 
     /// <summary>
@@ -318,9 +333,6 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// </summary>
     private void RunNewGeneration()
     {
-        // Clean the simulation of old carry over data.
-        CleanSimulation();
-
         // Return early and debug an error if there are more agents than the generation size.
         if (parentAgentPrefabs.Count > generationSize)
         {
@@ -382,6 +394,7 @@ public class SurvivalSimulationManager : MonoBehaviour
                 // Apply a parent gene and mutate the agent.
                 survivalist.SetBaseGenes(previousGenes.Dequeue());
                 survivalist.MutateGenes(mutationRange);
+                survivalist.generationNumber = generationNumber;
                 survivalist.isAsleep = false;
             }
             else
@@ -446,7 +459,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// <summary>
     /// Runs logic cycle for if an agent survives or dies and saves the relevant prefabs.
     /// </summary>
-    private void SurvivalCheckAndSaving()
+    private bool SurvivalCheckAndSaving()
     {
         // Temporary list for agents that would survive.
         List<GameObject> survivingPrefabs = new List<GameObject>();
@@ -463,13 +476,13 @@ public class SurvivalSimulationManager : MonoBehaviour
                 if(survivalist.RollForSurvival())
                 {
                     survivorCount++;
-                    survivalist.isDead = false;
+                    survivalist.survivalState = SurvivalState.SURVIVED;
                     survivingPrefabs.Add(PrefabUtility.SaveAsPrefabAsset(agent, string.Concat(primarySurvivedPath, "/Survivor", survivorCount, ".prefab")));
                 }
                 else
                 {
                     deceasedCount++;
-                    survivalist.isDead = true;
+                    survivalist.survivalState = SurvivalState.DIED;
                     PrefabUtility.SaveAsPrefabAsset(agent, string.Concat(primaryDiedPath, "/Deceased", deceasedCount, ".prefab"));
                 }
             }
@@ -482,16 +495,13 @@ public class SurvivalSimulationManager : MonoBehaviour
         // Stop the simulation if no agents survived.
         if(survivingPrefabs.Count == 0)
         {
-            simulationRunning = false;
-            simulationTimer.StopTimer();
-            
-            #if UNITY_EDITOR
-            EditorApplication.isPlaying = false;
-            #endif
+            Debug.Log("All agents died, in the simulation!");
+            return false;
         }
         else
         {
             parentAgentPrefabs = survivingPrefabs;
+            return true;
         }
     }
 
@@ -579,7 +589,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     {
         if (Directory.Exists(assetPath))
         {
-            Debug.Log(string.Concat("Path already exists: ", assetPath));
+            //Debug.Log(string.Concat("Path already exists: ", assetPath));
             return;
         }
 

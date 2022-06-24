@@ -85,7 +85,7 @@ public class GAgent : MonoBehaviour
     /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
-    public void Start()
+    public virtual void Start()
     {
         // Clear agent of potentially old data.
         goals.Clear();
@@ -117,7 +117,7 @@ public class GAgent : MonoBehaviour
     /// <summary>
     /// Late update is called once per frame.
     /// </summary>
-    public void LateUpdate()
+    public virtual void LateUpdate()
     {
         RunAgentLogic();
         CorrectSpriteOrientation();

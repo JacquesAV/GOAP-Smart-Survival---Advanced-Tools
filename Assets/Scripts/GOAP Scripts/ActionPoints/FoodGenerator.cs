@@ -82,6 +82,18 @@ public class FoodGenerator : MonoBehaviour
     }
 
     /// <summary>
+    /// Removes/destroys all remaining food being tracked from the world.
+    /// </summary>
+    public void RemoveFoodGlobal()
+    {
+        foreach (GameObject item in foodList)
+        {
+            GWorld.Instance.RemoveFoodPoint(item, true);
+        }
+        foodList.Clear();
+    }
+
+    /// <summary>
     /// Removes/destroys all remaining food being tracked.
     /// </summary>
     public void RemoveFood()

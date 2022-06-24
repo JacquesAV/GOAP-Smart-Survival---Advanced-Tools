@@ -54,6 +54,53 @@ public sealed class GWorld
     }
 
     /// <summary>
+    /// Reset the world accordingly.
+    /// </summary>
+    public void ResetWorld()
+    {
+        // Clear the world of its states.
+        world.States.Clear();
+
+        // Get all the world home points and modify the state world to report the existing amount.
+        homePoints = GameObject.FindGameObjectsWithTag("HomePoint").ToList();
+        if (homePoints.Count > 0)
+        {
+            world.ModifyState("HomePointExists", homePoints.Count);
+        }
+
+        // Get all the world delivery points and modify the state world to report the existing amount.
+        foodPoints = GameObject.FindGameObjectsWithTag("FoodPoint").ToList();
+        if (foodPoints.Count > 0)
+        {
+            world.ModifyState("FoodPointExists", foodPoints.Count);
+        }
+
+        // Set the belief of night.
+        SetIsNight(false);
+    }
+    
+    /// <summary>
+    /// Removes null elements from the tracked lists.
+    /// </summary>
+    public void RemoveNullReferences()
+    {
+        for (int i = foodPoints.Count - 1; i >= 0; i--)
+        {
+            if (foodPoints[i] == null)
+            {
+                foodPoints.RemoveAt(i);
+            }
+        }
+        for (int i = homePoints.Count - 1; i >= 0; i--)
+        {
+            if (homePoints[i] == null)
+            {
+                homePoints.RemoveAt(i);
+            }
+        }
+    }
+
+    /// <summary>
     /// Helper method to add new food points for tracking.
     /// </summary>
     /// <param name="givenPoints">The food points being tracked.</param>
@@ -98,6 +145,7 @@ public sealed class GWorld
                     if (action.CheckForSpace())
                     {
                         hasAvailablePoint = true;
+                        break;
                     }
                 }
             }
@@ -116,10 +164,13 @@ public sealed class GWorld
     /// <param name="shouldDestroy">If the object should be destroyed.</param>
     public void RemoveFoodPoint(GameObject removedObject, bool shouldDestroy)
     {
-        foodPoints.Remove(removedObject);
-        if(shouldDestroy)
+        if(foodPoints.Contains(removedObject))
         {
-            GameObject.Destroy(removedObject);
+            foodPoints.Remove(removedObject);
+            if (shouldDestroy)
+            {
+                Object.Destroy(removedObject);
+            }
         }
     }
 

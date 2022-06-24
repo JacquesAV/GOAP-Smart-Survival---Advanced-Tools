@@ -724,17 +724,16 @@ MonoBehaviour:
   - {fileID: 2045408613}
   - {fileID: 832727620}
   - {fileID: 166541501}
-  parentAgentPrefabs:
-  - {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
+  parentAgentPrefabs: []
   baseAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
-  generationSize: 15
+  generationSize: 50
   simulationPathName: Simulations/TestTribe
   generationNumber: 1
-  generationLimit: 100
+  generationLimit: 2
   simulationRunning: 1
   simulationDuration: 25
-  simulationTimeScale: 1
-  dayRatio: 0.5
+  simulationTimeScale: 10
+  dayRatio: 0.75
 --- !u!114 &762830177
 MonoBehaviour:
   m_ObjectHideFlags: 0

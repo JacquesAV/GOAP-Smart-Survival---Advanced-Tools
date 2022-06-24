@@ -249,7 +249,7 @@ public abstract class GAction : MonoBehaviour
         for (int i = targets.Count - 1; i >= 0; i--)
         {
             GameObject potentialTarget = targets[i];
-            if(potentialTarget.TryGetComponent(out ActionPoint point) && point.CheckForSpace())
+            if (potentialTarget != null && potentialTarget.TryGetComponent(out ActionPoint point) && point.CheckForSpace())
             {
                 actionPointTargets.Add(potentialTarget);
             }

@@ -60,9 +60,14 @@ public class SurvivalAgent : GAgent
     public bool wasGenerous = false;
 
     /// <summary>
-    /// Boolean to track if the agent is considered dead or alive.
+    /// Enum to track if the agent survived, died or is undefined.
     /// </summary>
-    public bool isDead = false;
+    public SurvivalState survivalState = SurvivalState.UNDEFINED;
+
+    /// <summary>
+    /// Integer to track which generation this agent belongs to.
+    /// </summary>
+    public int generationNumber = 0;
 
     /// <summary>
     /// The current survival chance that a given agent has.
@@ -94,7 +99,7 @@ public class SurvivalAgent : GAgent
     /// Start is called before the first frame update.
     /// Sets up the agent and all relevant parameters.
     /// </summary>
-    new void Start()
+    public override void Start()
     {
         base.Start();
 
@@ -115,7 +120,7 @@ public class SurvivalAgent : GAgent
     /// <summary>
     /// Late update visual elements.
     /// </summary>
-    new void LateUpdate()
+    public override void LateUpdate()
     {
         // Return early if agent is asleep.
         if (isAsleep) return;
