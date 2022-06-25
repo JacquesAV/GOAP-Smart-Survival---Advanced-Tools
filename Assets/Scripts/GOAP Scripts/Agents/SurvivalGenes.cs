@@ -8,7 +8,7 @@ using UnityEngine;
 public struct SurvivalGenes
 {
     /// <summary>
-    /// The natural hardiness of the agent, granting a higher base chance of survival over
+    /// The natural hardiness of the agent, granting a higher base chance of survival over 
     /// the natural speed of the agent, granting a higher movement speed.
     /// </summary>
     [Range(0, 1)]

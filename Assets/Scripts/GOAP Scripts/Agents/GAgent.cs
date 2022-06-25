@@ -3,6 +3,9 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
 
+/// <summary>
+/// An agent that is able to function within a goal orientated action planning framework.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(GInventory))]
 public class GAgent : MonoBehaviour
@@ -57,7 +60,7 @@ public class GAgent : MonoBehaviour
     /// <summary>
     /// Distance for a goal to be valid.
     /// </summary>
-    [Range(1.5f,2.5f)]
+    [Range(1.5f, 2.5f)]
     public float goalDistanceSentitivity = 2f;
 
     /// <summary>

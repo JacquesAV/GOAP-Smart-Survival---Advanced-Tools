@@ -147,7 +147,7 @@ public abstract class GAction : MonoBehaviour
     /// If action can be completed based on set of pre-conditions or set of anti-conditions.
     /// </summary>
     /// <param name="conditions">List of conditions to consider.</param>
-    /// <returns></returns>
+    /// <returns>If the action is achievable.</returns>
     public bool IsAchievableGiven(Dictionary<string, int> conditions)
     {
         // Compare against preconditions.
@@ -259,29 +259,28 @@ public abstract class GAction : MonoBehaviour
         return GetClosestTarget(actionPointTargets);
     }
 
-    public static bool GetPath(NavMeshPath path, Vector3 fromPos, Vector3 toPos, int passableMask)
+    /// <summary>
+    /// Checks if a given path exists and is possible.
+    /// Currently unused, but may have relevant in future for navigation related checks.
+    /// </summary>
+    /// <param name="path">The navigation system being used.</param>
+    /// <param name="startPosition">The start position of the potential path.</param>
+    /// <param name="endPosition">The end position of the potential path.</param>
+    /// <param name="passableMask">Masks that may affect or filter the path.</param>
+    /// <returns>If the given path parameters are possible.</returns>
+    public static bool GetPath(NavMeshPath path, Vector3 startPosition, Vector3 endPosition, int passableMask)
     {
+        // Clear potential junk data.
         path.ClearCorners();
 
-        if (NavMesh.CalculatePath(fromPos, toPos, passableMask, path) == false)
-            return false;
-
-        return true;
+        // Calculate the path and return based on the results.
+        return NavMesh.CalculatePath(startPosition, endPosition, passableMask, path) != false;
     }
 
     /// <summary>
-    /// Get if the path is possible.
+    /// Get if the path is considered complete.
+    /// Currently unused, but may have relevant in future for navigation related checks.
     /// </summary>
     /// <returns>If the path if complete.</returns>
-    public bool HasCompletePath()
-    {
-        if(navAgent.pathStatus == NavMeshPathStatus.PathComplete)
-        {
-            return true;
-        } 
-        else
-        {
-            return false;
-        }
-    }
+    public bool HasCompletePath() => (navAgent.pathStatus == NavMeshPathStatus.PathComplete);
 }

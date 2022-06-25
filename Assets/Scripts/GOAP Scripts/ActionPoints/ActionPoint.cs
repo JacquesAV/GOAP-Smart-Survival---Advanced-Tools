@@ -78,8 +78,8 @@ public class ActionPoint : MonoBehaviour
     /// <summary>
     /// Checks if a given agent has reserved the action point.
     /// </summary>
-    /// <param name="givenAgent"></param>
-    /// <returns></returns>
+    /// <param name="givenAgent">The agent being checked.</param>
+    /// <returns>If the given agent has reserved the action point.</returns>
     public bool HasReservedActionPoint(GAgent givenAgent) => occupyingAgents.Contains(givenAgent);
 
     /// <summary>

@@ -72,7 +72,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     public float hungerPenalty = 25;
 
     /// <summary>
-    /// Declaration with automatic getters and setters for the active survival manager
+    /// Declaration with automatic getters and setters for the active survival manager.
     /// </summary>
     public static SurvivalSimulationManager SingletonManager { get; private set; }
 
@@ -459,6 +459,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// <summary>
     /// Runs logic cycle for if an agent survives or dies and saves the relevant prefabs.
     /// </summary>
+    /// <returns>If there are agents that survived.</returns>
     private bool SurvivalCheckAndSaving()
     {
         // Temporary list for agents that would survive.
@@ -518,8 +519,8 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// <summary>
     /// Generates a list of survival genes based on a list of given parents and the intended size for the new gene pool
     /// </summary>
-    /// <param name="parentAgents"></param>
-    /// <param name="generationCount"></param>
+    /// <param name="parentAgents">The list of survival agent parents being used in generation.</param>
+    /// <param name="generationCount">The size of the generation.</param>
     /// <returns>A list of survival genes.</returns>
     private List<SurvivalGenes> GenerateGenePool(List<SurvivalAgent> parentAgents, int generationCount)
     {

@@ -2,15 +2,22 @@
 using UnityEditor;
 using System.Collections.Generic;
 
+/// <summary>
+/// Visualizer editor that allows for agent data to be displayed.
+/// </summary>
 [CustomEditor(typeof(GAgentVisual))]
 [CanEditMultipleObjects]
 public class GAgentVisualEditor : Editor
 {
+    /// <summary>
+    /// Visualize the custom editor for the agent.
+    /// </summary>
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
         serializedObject.Update();
         GAgentVisual agent = (GAgentVisual)target;
+
         GUILayout.Label("Name: " + agent.name);
         GUILayout.Label("Current Action: " + agent.gameObject.GetComponent<GAgent>().currentAction);
         GUILayout.Label("Actions: ");
@@ -26,6 +33,7 @@ public class GAgentVisualEditor : Editor
 
             GUILayout.Label("====  " + a.actionName + "(" + pre + ")(" + eff + ")");
         }
+
         GUILayout.Label("Goals: ");
         foreach (KeyValuePair<SubGoal, int> g in agent.gameObject.GetComponent<GAgent>().goals)
         {
@@ -33,12 +41,14 @@ public class GAgentVisualEditor : Editor
             foreach (KeyValuePair<string, int> sg in g.Key.sGoals)
                 GUILayout.Label("=====  " + sg.Key);
         }
+
         GUILayout.Label("Beliefs: ");
         foreach (KeyValuePair<string, int> sg in agent.gameObject.GetComponent<GAgent>().beliefs.States)
         {
             GUILayout.Label("=====  " + sg.Key);
         }
 
+        // Temporary disable for the current simulation framework.
         //GUILayout.Label("Inventory: ");
         //foreach (GameObject g in agent.gameObject.GetComponent<GAgent>().inventory.items)
         //{

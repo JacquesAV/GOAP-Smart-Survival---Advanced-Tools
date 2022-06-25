@@ -1,5 +1,5 @@
 /// <summary>
-/// Defines the types of states that exist for survival.
+/// Defines the types of states that exist for an agents survival.
 /// </summary>
 public enum SurvivalState
 {
