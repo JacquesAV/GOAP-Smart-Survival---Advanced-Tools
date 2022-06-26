@@ -135,7 +135,7 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// The name and path of the current simulation, important in folder sorting.
     /// </summary>
     [SerializeField]
-    private string simulationPathName;
+    private string simulationPathName = "Simulations";
 
     /// <summary>
     /// The number of the current generation being simulated.

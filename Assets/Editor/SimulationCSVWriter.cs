@@ -16,7 +16,7 @@ public class SimulationCSVWriter : EditorWindow
     /// <summary>
     /// The path for the simulations generations.
     /// </summary>
-    private string primarySimulationsPath = "Assets/";
+    private string primarySimulationsPath = "Assets/Simulations";
 
     /// <summary>
     /// The type of agent to export, based on their survival result.
@@ -24,9 +24,14 @@ public class SimulationCSVWriter : EditorWindow
     private SurvivalState survivalStateFilter;
 
     /// <summary>
+    /// A toggle that allows for swapping between the USA/UK and European format.
+    /// </summary>
+    private bool usingEuropeanFormat = true;
+
+    /// <summary>
     /// Constant value for shifting labels in the GUI, measured in pixels.
     /// </summary>
-    private const float LABEL_SHIFT = 100;
+    private const float LABEL_SHIFT = 105;
 
     /// <summary>
     /// Defines a minimum size for the editor window in width and height.
@@ -76,6 +81,9 @@ public class SimulationCSVWriter : EditorWindow
         // Allow for modification of the type of agent to export.
         survivalStateFilter = (SurvivalState)EditorGUILayout.EnumPopup("State Filter: ", survivalStateFilter);
 
+        // Allow for modification of the export format type.
+        usingEuropeanFormat = EditorGUILayout.Toggle("European Format: ", usingEuropeanFormat);
+
         // Button for exporting the given simulation path.
         if (GUILayout.Button("Save Agent Data to File", GUILayout.Height(25)))
         {
@@ -93,6 +101,9 @@ public class SimulationCSVWriter : EditorWindow
 
         // Temporary list to hold references to the survival agents that will be exported.
         List<SurvivalAgent> agentsToExport = new List<SurvivalAgent>();
+
+        // Define the separator and decimal types.
+        string separatorSymbol = usingEuropeanFormat ? "; " : ", ";
 
         // Iterate over each found GUID.
         foreach (string guid in assetGUIDs)
@@ -120,11 +131,13 @@ public class SimulationCSVWriter : EditorWindow
 
             // Open a stream for the text writer class.
             TextWriter textWriter = new StreamWriter(exportFilePath, true);
-            textWriter.WriteLine("Generation; Survival State; Survival Chance; Total Food; Hardiness over Speed; Generosity; Was Generous");
-            textWriter.Close();
 
-            // Open a new stream for the agents.
-            textWriter = new StreamWriter(exportFilePath, true);
+            // Build and format the string with the header information.
+            List<string> headerData = new List<string> { "Generation", "Survival State", "Survival Chance", "Total Food", "Hardiness over Speed", "Generosity", "Was Generous" };
+            string formattedHeaderData = string.Join(separatorSymbol, headerData);
+
+            // Write the string to the file.
+            textWriter.WriteLine(formattedHeaderData);
 
             // Declare local variables for the agents to set.
             string generation;
@@ -147,9 +160,17 @@ public class SimulationCSVWriter : EditorWindow
                 hardinessOverSpeed = item.agentHardinessOverSpeed.ToString();
                 generosity = item.agentGenerosity.ToString();
 
+                // Replace decimal symbols if applicable.
+                if(usingEuropeanFormat)
+                {
+                    survivalChance = survivalChance.Replace(".",",");
+                    hardinessOverSpeed = hardinessOverSpeed.Replace(".", ",");
+                    generosity = generosity.Replace(".", ",");
+                }
+
                 // Build and format the string with the ordered information.
                 List<string> agentData = new List<string> { generation, survivalState, survivalChance, totalFood, hardinessOverSpeed, generosity, generous };
-                string formattedData = string.Join("; ", agentData);
+                string formattedData = string.Join(separatorSymbol, agentData);
 
                 // Write the string to the file.
                 textWriter.WriteLine(formattedData);
