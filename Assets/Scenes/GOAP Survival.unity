@@ -727,13 +727,13 @@ MonoBehaviour:
   parentAgentPrefabs:
   - {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
   baseAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
-  generationSize: 50
+  generationSize: 1
   simulationPathName: Simulations/TestTribe
   generationNumber: 1
-  generationLimit: 2
+  generationLimit: 50
   simulationRunning: 1
   simulationDuration: 25
-  simulationTimeScale: 10
+  simulationTimeScale: 1
   dayRatio: 0.75
 --- !u!114 &762830177
 MonoBehaviour:

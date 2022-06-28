@@ -83,7 +83,7 @@ public class ReturnHome : GAction
         }
 
         // Set the belief that the agent has returned home.
-        agentBeliefs.SetState("ReturnedHome", 1);
+        gAgent.beliefs.SetState("ReturnedHome", 1);
 
         return true;
     }

@@ -85,15 +85,14 @@ public class CollectFood : GAction
         if (HasReachedCapacity())
         {
             // Declare that backpack is full.
-            agentBeliefs.ModifyState("ReachedFoodCapacity", 1);
+            gAgent.beliefs.ModifyState("ReachedFoodCapacity", 1);
         }
 
         // Add belief that they have food.
-        agentBeliefs.ModifyState("HasFood", 1);
+        gAgent.beliefs.ModifyState("HasFood", gAgent.inventory.TotalFood);
 
         // Request object destruction.
         GWorld.Instance.RemoveFoodPoint(target.gameObject, true);
-
         return true;
     }
 
