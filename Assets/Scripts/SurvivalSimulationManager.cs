@@ -1,8 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using Debug = UnityEngine.Debug;
 
 /// <summary>
@@ -148,11 +150,11 @@ public class SurvivalSimulationManager : MonoBehaviour
     /// The maximum number before the simulation should automatically stop.
     /// </summary>
     [SerializeField]
-    private int generationLimit = 100;
+    private int generationLimit = 500;
 
     [Header("Technical Simulation Data")]
     /// <summary>
-    /// Track if the simulation is currently running or not
+    /// Track if the simulation is currently running or not.
     /// </summary>
     [SerializeField]
     private bool simulationRunning = false;
@@ -165,6 +167,7 @@ public class SurvivalSimulationManager : MonoBehaviour
 
     /// <summary>
     /// Declares how much unity must speed up the simulation.
+    /// A faster time scale negatively impacts performance both simulation and performance wise.
     /// </summary>
     [SerializeField]
     [Range(1, 10)]
@@ -176,6 +179,13 @@ public class SurvivalSimulationManager : MonoBehaviour
     [SerializeField]
     [Range(0, 1)]
     private float dayRatio = 0.5f;
+
+    /// <summary>
+    /// The ratio of food to agents.
+    /// </summary>
+    [Range(0, 1)]
+    [SerializeField]
+    private float foodPerAgentRatio = 0.75f;
 
     /// <summary>
     /// The path for the simulations generations.
@@ -340,6 +350,9 @@ public class SurvivalSimulationManager : MonoBehaviour
             return;
         }
 
+        // Update the food count to match simulation settings.
+        foodGenerator.foodCount = Mathf.RoundToInt(generationSize * foodPerAgentRatio);
+
         // Generate food for the simulation.
         foodGenerator.GenerateFoodInArea();
 
@@ -468,6 +481,7 @@ public class SurvivalSimulationManager : MonoBehaviour
         int deceasedCount = 0;
         foreach (GameObject agent in activeAgents)
         {
+            // Output the agent component.
             if (agent.TryGetComponent(out SurvivalAgent survivalist))
             {
                 // Recalculate survival chances in case they are not updated.
@@ -513,7 +527,18 @@ public class SurvivalSimulationManager : MonoBehaviour
     {
         // Sleep the agent and disable its collisions.
         returnedAgent.isAsleep = true;
+        StartCoroutine(DisableCollisionabledLate(returnedAgent));
+    }
+
+    /// <summary>
+    /// Calls for collisionables to be disabled at the end of frame.
+    /// </summary>
+    /// <returns>An end of frame, allowing for elements to be disabled.</returns>
+    private IEnumerator DisableCollisionabledLate(SurvivalAgent returnedAgent)
+    {
+        yield return new WaitForEndOfFrame();
         returnedAgent.gameObject.GetComponent<CircleCollider2D>().enabled = false;
+        returnedAgent.gameObject.GetComponent<NavMeshAgent>().enabled = false;
     }
 
     /// <summary>

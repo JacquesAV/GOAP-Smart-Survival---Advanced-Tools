@@ -168,7 +168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -462,7 +462,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -727,14 +727,16 @@ MonoBehaviour:
   parentAgentPrefabs:
   - {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
   baseAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
-  generationSize: 1
-  simulationPathName: Simulations/TestTribe
+  generationSize: 50
+  simulationPathName: Simulations/StandardTribe
   generationNumber: 1
   generationLimit: 50
+  removeComponentsOnSave: 0
   simulationRunning: 1
-  simulationDuration: 25
-  simulationTimeScale: 1
+  simulationDuration: 15
+  simulationTimeScale: 5
   dayRatio: 0.75
+  foodPerAgentRatio: 0.75
 --- !u!114 &762830177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -788,7 +790,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -897,7 +899,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -970,7 +972,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: globalReservation
@@ -1132,7 +1134,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -1228,7 +1230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodPrefab: {fileID: 825788034404475618, guid: 7b80da0c8c227e54d88dc2c4dd018b48, type: 3}
-  foodCount: 25
+  foodCount: 0
   dimensions: {x: 29, y: 29}
   foodList: []
 --- !u!1001 &1339165974
@@ -1252,7 +1254,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: globalReservation
@@ -8712,7 +8714,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: globalReservation
@@ -31099,7 +31101,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -31181,7 +31183,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -31258,7 +31260,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -31339,7 +31341,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -31412,7 +31414,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: globalReservation
@@ -31509,7 +31511,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -31627,7 +31629,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -31704,7 +31706,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -31891,7 +31893,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: globalReservation
@@ -31987,7 +31989,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -32072,7 +32074,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
@@ -32149,7 +32151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773529465890109957, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: agentLimitCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7157662842060049316, guid: f1c83b7698649804aa2ff197d70cafef, type: 3}
       propertyPath: m_RootOrder
