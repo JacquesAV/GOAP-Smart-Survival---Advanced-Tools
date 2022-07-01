@@ -728,10 +728,9 @@ MonoBehaviour:
   - {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
   baseAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
   generationSize: 50
-  simulationPathName: Simulations/StandardTribe
+  simulationPathName: Simulations/NeutralTribe
   generationNumber: 1
-  generationLimit: 50
-  removeComponentsOnSave: 0
+  generationLimit: 250
   simulationRunning: 1
   simulationDuration: 15
   simulationTimeScale: 5
