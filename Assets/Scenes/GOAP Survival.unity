@@ -725,13 +725,12 @@ MonoBehaviour:
   - {fileID: 832727620}
   - {fileID: 166541501}
   parentAgentPrefabs:
-  - {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
-  baseAgent: {fileID: 5459764963503566473, guid: 035ee737bc09d044c8973159bb959006, type: 3}
+  - {fileID: 7148368667699773675, guid: f2a0ac46c0f3dc44185a0ec66972bf0e, type: 3}
+  baseAgent: {fileID: 7148368667699773675, guid: f2a0ac46c0f3dc44185a0ec66972bf0e, type: 3}
   generationSize: 50
-  simulationPathName: Simulations/StandardTribe
+  simulationPathName: Simulations/GenerousTribe
   generationNumber: 1
-  generationLimit: 50
-  removeComponentsOnSave: 0
+  generationLimit: 100
   simulationRunning: 1
   simulationDuration: 15
   simulationTimeScale: 5
